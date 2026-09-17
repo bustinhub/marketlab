@@ -42,7 +42,7 @@ export function TradeScreen({initialSymbol="AAPL"}:{initialSymbol?:string}){
       <div className="quoteBlock">
         <strong>{quote?money(quote.price,quote.currency):quoteLoading?"Loading…":"—"}</strong>
         {quote&&<span className={quote.changePercent>=0?"up":"down"}>{quote.change>=0?"+":""}{money(Math.abs(quote.change),quote.currency)} · {quote.changePercent>=0?"+":""}{quote.changePercent.toFixed(2)}%</span>}
-        <small>{quote?.datetime||""}</small>
+        <small>{quote?.datetime||""}{quote&&typeof quote.isMarketOpen==="boolean" ? (quote.isMarketOpen?" · Market open":" · Market closed") : ""}</small>
       </div>
       {marketError&&<div className="marketError">{marketError}</div>}
     </section>
