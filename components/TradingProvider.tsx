@@ -19,7 +19,7 @@ type TradingContextValue={
   quotes:Record<string,MarketQuote>;
   quoteLoading:boolean;
   marketError:string|null;
-  feedMode:"live"|"unavailable";
+  feedMode:"live"|"unavailable"|"connecting";
   cash:number;
   startingBalance:number;
   holdings:Holding[];
@@ -185,7 +185,7 @@ export function TradingProvider({children}:{children:React.ReactNode}){
 
   return <TradingContext.Provider value={{
     selected,setSelected,quote:quotes[selected]??null,quotes,quoteLoading,marketError,
-    feedMode:marketError?"unavailable":"live",cash,startingBalance,holdings,trades,watchlist,equity,invested,totalReturn,
+    feedMode:marketError?"unavailable":Object.keys(quotes).length?"live":"connecting",cash,startingBalance,holdings,trades,watchlist,equity,invested,totalReturn,
     portfolioLoading,portfolioReady,loadQuote,refreshPortfolio,execute,toggleWatchlist
   }}>{children}</TradingContext.Provider>;
 }
