@@ -42,7 +42,7 @@ export function AppShell({children,rightRail}:{children:React.ReactNode;rightRai
         setResults(res.ok&&Array.isArray(data.results)?data.results.slice(0,10):[]);
       }catch{setResults([])}
       finally{setSearching(false)}
-    },250);
+    },220);
     return()=>clearTimeout(id);
   },[query]);
 
@@ -58,19 +58,19 @@ export function AppShell({children,rightRail}:{children:React.ReactNode;rightRai
   const nav=[
     {href:"/trade",label:"Markets",icon:BarChart3},
     {href:"/portfolio",label:"Portfolio",icon:WalletCards},
-    {href:"/leaderboard",label:"Leaderboard",icon:Trophy},
+    {href:"/leaderboard",label:"Ranks",icon:Trophy},
     {href:"/classes",label:"Classes",icon:Users},
     {href:"/learn",label:"Learn",icon:BookOpen},
     ...(profile?.role==="teacher"?[{href:"/teacher",label:"Teacher",icon:GraduationCap}]:[]),
   ];
 
-  return <div className="appFrame">
+  return <div className="appFrame workspaceTheme">
     <header className="appTopbar">
       <BrandLogo/>
       <div className="globalSearch">
-        <Search size={16}/>
-        <input ref={searchInput} value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search all U.S. stocks and ETFs"/>
-        <kbd>Ctrl K</kbd>
+        <Search size={15}/>
+        <input ref={searchInput} value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search ticker or company"/>
+        <kbd>⌘K</kbd>
         {(query&&results.length>0)&&<div className="globalSearchMenu">
           {results.map(s=><button key={s.exchange+":"+s.symbol} onClick={()=>openSymbol(s.symbol)}>
             <span className="symbolChip">{s.symbol.slice(0,1)}</span>
@@ -80,10 +80,19 @@ export function AppShell({children,rightRail}:{children:React.ReactNode;rightRai
         </div>}
         {query&&searching&&<div className="searchStatus">Searching…</div>}
       </div>
+
       <div className="topbarMeta">
-        <div className={feedMode==="live"?"feedBadge live":"feedBadge"}><i/>{feedMode==="live"?"LIVE":feedMode==="connecting"?"CONNECTING":"DATA OFFLINE"}</div>
-        {user&&activeClass?.member_role==="student"&&<div className="topEquity"><span>Portfolio</span><strong>{"$"}{equity.toLocaleString("en-US",{maximumFractionDigits:0})}</strong></div>}
-        {user?<div className="accountMenu"><button className="userAvatar" title={profile?.display_name||user.email||""}>{initials}</button><button className="signOutLink" onClick={()=>void signOut()}>Sign out</button></div>:<Link className="topSignIn" href="/login"><LogIn size={14}/> Sign in</Link>}
+        {user&&<Link href="/classes" className="topClassPill">
+          <span>{activeClass?.name||"No class"}</span>
+          <small>{activeClass?(activeClass.period||activeClass.code):(classes.length?classes.length+" classes":"Choose class")}</small>
+        </Link>}
+        <div className={feedMode==="live"?"feedBadge live":"feedBadge"}><i/>{feedMode==="live"?"LIVE":feedMode==="connecting"?"CONNECTING":"OFFLINE"}</div>
+        {user&&activeClass?.member_role==="student"&&<div className="topEquity"><span>Equity</span><strong>{"$"}{equity.toLocaleString("en-US",{maximumFractionDigits:0})}</strong></div>}
+        {user?<div className="accountMenu">
+          <button className="userAvatar" title={profile?.display_name||user.email||""}>{initials}</button>
+          <div className="accountText"><b>{profile?.display_name||"Account"}</b><span>{profile?.role||"student"}</span></div>
+          <button className="signOutLink" onClick={()=>void signOut()}>Sign out</button>
+        </div>:<Link className="topSignIn" href="/login"><LogIn size={14}/> Sign in</Link>}
       </div>
     </header>
 
@@ -92,19 +101,12 @@ export function AppShell({children,rightRail}:{children:React.ReactNode;rightRai
         <div className="navGroup">
           {nav.map(item=>{
             const Icon=item.icon;
-            const active=pathname===item.href;
-            return <Link key={item.href} href={item.href} className={active?"sideLink active":"sideLink"}><Icon size={18}/><span>{item.label}</span></Link>
+            const active=pathname===item.href||pathname.startsWith(item.href+"/");
+            return <Link title={item.label} key={item.href} href={item.href} className={active?"sideLink active":"sideLink"}>
+              <Icon size={18}/><span>{item.label}</span>
+            </Link>
           })}
         </div>
-        {user&&<Link href="/classes" className="classSummary">
-          <div className="classIcon"><Users size={16}/></div>
-          <div>
-            <small>{activeClass?"ACTIVE CLASS":"CLASSROOM"}</small>
-            <strong>{activeClass?.name||"Choose a class"}</strong>
-            <span>{activeClass?(activeClass.period||activeClass.code):(classes.length?classes.length+" classes":"Join or create")}</span>
-          </div>
-        </Link>}
-        <div className="sidebarBottom"/>
       </aside>
       <main className="appContent">{children}</main>
       {rightRail&&<aside className="rightRail">{rightRail}</aside>}

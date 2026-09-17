@@ -386,3 +386,317 @@ body{font-family:var(--sans);letter-spacing:0}
 .teacherStudent{grid-template-columns:38px 1fr 110px 56px 40px}
 
 .classCodeActions{display:flex;align-items:center;gap:7px}
+
+
+/* =========================================================
+   MarketLab workspace UI — September 2026
+   Dense, neutral, classroom-friendly, TradingView-inspired.
+   ========================================================= */
+:root{
+  --ml-bg:#0f0f10;
+  --ml-panel:#141416;
+  --ml-panel-2:#18181b;
+  --ml-line:#2a2a2e;
+  --ml-line-soft:#202024;
+  --ml-text:#f2f2f3;
+  --ml-muted:#8b8b93;
+  --ml-muted-2:#66666e;
+  --ml-blue:#2962ff;
+  --ml-green:#26a69a;
+  --ml-red:#ef5350;
+  --ml-radius:6px;
+}
+*{box-sizing:border-box}
+html,body{background:var(--ml-bg)!important;color:var(--ml-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif!important}
+body{font-feature-settings:"tnum" 1,"lnum" 1}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed}
+.workspaceTheme{background:var(--ml-bg)!important}
+.appFrame{height:100vh;overflow:hidden;background:var(--ml-bg)!important}
+.appTopbar{
+  height:56px!important;
+  padding:0 12px!important;
+  display:grid!important;
+  grid-template-columns:168px minmax(260px,520px) 1fr!important;
+  align-items:center!important;
+  gap:12px!important;
+  border-bottom:1px solid var(--ml-line)!important;
+  background:#0c0c0d!important;
+  position:relative!important;
+  z-index:60!important;
+}
+.brandLogo{gap:7px!important;color:#fff!important}
+.brandWord{font-size:14px!important;letter-spacing:-.02em!important}
+.brandWord strong{color:#8ea7ff!important}
+.globalSearch{
+  height:34px!important;
+  width:100%!important;
+  border:1px solid #303034!important;
+  border-radius:6px!important;
+  background:#171719!important;
+  padding:0 10px!important;
+  gap:8px!important;
+  position:relative!important;
+}
+.globalSearch svg{color:#85858d}
+.globalSearch input{font-size:12px!important;color:#eee!important}
+.globalSearch input::placeholder{color:#6f6f76!important}
+.globalSearch kbd{font-size:9px!important;color:#77777e!important;border:1px solid #35353a!important;background:#202024!important;border-radius:4px!important;padding:2px 5px!important}
+.globalSearchMenu,.searchStatus{
+  top:39px!important;
+  border:1px solid #343439!important;
+  border-radius:6px!important;
+  box-shadow:0 14px 40px rgba(0,0,0,.45)!important;
+  background:#171719!important;
+}
+.globalSearchMenu button{min-height:48px!important;border-bottom:1px solid #242428!important}
+.globalSearchMenu button:hover{background:#202024!important}
+.symbolChip{border-radius:4px!important;background:#26262a!important;color:#ddd!important}
+.topbarMeta{display:flex!important;justify-content:flex-end!important;align-items:center!important;gap:9px!important;min-width:0!important}
+.topClassPill{
+  min-width:130px;max-width:190px;height:34px;padding:5px 9px;
+  display:flex;flex-direction:column;justify-content:center;
+  border:1px solid #303034;border-radius:5px;background:#151517;color:#ddd;
+}
+.topClassPill span{font-size:10px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topClassPill small{font-size:8px;color:#74747c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feedBadge{height:25px!important;padding:0 8px!important;border:1px solid #2d2d31!important;border-radius:4px!important;background:#141416!important;font-size:8px!important;color:#7d7d84!important}
+.feedBadge i{width:5px!important;height:5px!important}
+.feedBadge.live{color:#8ccfc8!important;border-color:#244541!important;background:#10201e!important}
+.topEquity{padding:0 10px!important;border-left:1px solid #2b2b2f!important}
+.topEquity span{font-size:8px!important;color:#77777f!important}
+.topEquity strong{font-size:11px!important;font-family:inherit!important}
+.accountMenu{gap:7px!important}
+.userAvatar{width:30px!important;height:30px!important;border-radius:50%!important;background:#242428!important;border:1px solid #39393e!important;font-size:9px!important}
+.accountText{display:flex;flex-direction:column;max-width:110px}
+.accountText b{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.accountText span{font-size:8px;color:#707078;text-transform:capitalize}
+.signOutLink{font-size:9px!important}
+.shellGrid{
+  height:calc(100vh - 56px)!important;
+  display:grid!important;
+  grid-template-columns:72px minmax(0,1fr)!important;
+  background:var(--ml-bg)!important;
+}
+.shellGrid.withRail{grid-template-columns:72px minmax(0,1fr) 304px!important}
+.sidebar{
+  border-right:1px solid var(--ml-line)!important;
+  background:#0c0c0d!important;
+  padding:8px 6px!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+.navGroup{display:flex!important;flex-direction:column!important;gap:3px!important}
+.sideLink{
+  height:52px!important;
+  padding:5px 2px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:4px!important;
+  border-radius:5px!important;
+  color:#75757d!important;
+  font-size:8px!important;
+  line-height:1!important;
+}
+.sideLink svg{stroke-width:1.8}
+.sideLink:hover{background:#18181b!important;color:#d0d0d3!important}
+.sideLink.active{background:#202024!important;color:#fff!important;box-shadow:inset 2px 0 var(--ml-blue)!important}
+.sideLink.active svg{color:#8fa9ff}
+.appContent{min-width:0!important;overflow:auto!important;background:var(--ml-bg)!important}
+.rightRail{
+  min-width:0!important;
+  overflow:auto!important;
+  border-left:1px solid var(--ml-line)!important;
+  background:#0c0c0d!important;
+}
+.railStack{min-height:100%;background:#0c0c0d!important}
+.railSection,.tradeTicket{background:#0c0c0d!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+.railSection{border-bottom:1px solid var(--ml-line)!important}
+.railTitle{height:42px!important;padding:0 12px!important;border-bottom:1px solid var(--ml-line)!important}
+.railTitle strong{font-size:11px!important}
+.railTitle span{font-size:9px;color:#66666e}
+.watchHeader{height:26px!important;padding:0 10px!important;color:#62626a!important;font-size:8px!important}
+.watchRows{max-height:260px;overflow:auto}
+.watchRow{
+  min-height:43px!important;padding:5px 9px!important;border-top:1px solid #1e1e22!important;
+  grid-template-columns:minmax(0,1fr) 72px 58px!important;background:transparent!important
+}
+.watchRow:hover{background:#171719!important}
+.watchRow.active{background:#1d1d21!important;box-shadow:inset 2px 0 var(--ml-blue)!important}
+.watchRow b{font-size:10px!important}
+.watchRow small{font-size:7.5px!important;color:#65656d!important}
+.watchRow strong,.watchRow em{font-size:9px!important;font-family:inherit!important}
+.watchAdd{height:34px!important;border-top:1px solid var(--ml-line)!important;color:#8d8d95!important;font-size:9px!important;background:transparent!important}
+.watchAdd:hover{background:#171719!important;color:#fff!important}
+.tradeTicket{padding:13px 12px 16px!important}
+.ticketHeader{margin:0 0 10px!important}
+.ticketHeader strong{font-size:11px!important}
+.ticketHeader span{font-size:8px!important;color:#707078!important}
+.sideTabs{height:32px!important;margin-bottom:11px!important;padding:2px!important;border:1px solid #2c2c30!important;border-radius:5px!important;background:#151517!important}
+.sideTabs button{border-radius:3px!important;font-size:9px!important}
+.sideTabs .buy.active{background:#17352f!important;color:#9ce1d9!important}
+.sideTabs .sell.active{background:#3a1c1d!important;color:#ffadab!important}
+.ticketSymbol{height:33px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #242428;margin-bottom:11px}
+.ticketSymbol span{font-size:10px;font-weight:650}.ticketSymbol b{font-size:10px}
+.orderField{margin:10px 0!important}
+.orderField label,.amountField label{font-size:8px!important;color:#72727a!important}
+.segmented{height:29px!important;background:#151517!important;border:1px solid #2d2d31!important;border-radius:4px!important}
+.segmented button{font-size:8px!important}
+.segmented button.active{background:#29292d!important;color:#fff!important}
+.amountField>div{height:42px!important;border:1px solid #35353a!important;border-radius:5px!important;background:#121214!important}
+.amountField input{font-size:18px!important;font-weight:600!important}
+.ticketRows{margin-top:12px!important;border-top:1px solid #242428!important}
+.ticketRows>div{padding:7px 0!important;font-size:8px!important}
+.ticketRows span{color:#73737b!important}
+.ticketRows b{font-family:inherit!important;font-weight:600!important}
+.primaryOrder{height:38px!important;margin-top:12px!important;border-radius:5px!important;font-size:10px!important;font-weight:650!important}
+.primaryOrder.buy{background:#1b4f46!important;color:#c3fff8!important;border:1px solid #2d7569!important}
+.primaryOrder.sell{background:#5a2527!important;color:#ffd1cf!important;border:1px solid #874044!important}
+.reviewBox,.ticketNotice{border-radius:5px!important;font-size:8px!important}
+.ticketGate{padding:16px!important}
+.ticketGate b{font-size:11px!important}.ticketGate span{font-size:9px!important}
+
+.tradeWorkspace{min-height:100%;display:flex;flex-direction:column;background:var(--ml-bg)}
+.instrumentHeader.clean{
+  min-height:72px!important;
+  padding:12px 14px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto 32px!important;
+  align-items:center!important;
+  gap:14px!important;
+  border-bottom:1px solid var(--ml-line)!important;
+  background:#0f0f10!important;
+}
+.instrumentIdentity{display:flex!important;align-items:center!important;gap:10px!important}
+.companyMark{
+  width:36px!important;height:36px!important;display:grid!important;place-items:center!important;
+  border-radius:50%!important;background:#202024!important;border:1px solid #34343a!important;
+  font-size:12px!important;font-weight:700!important
+}
+.symbolLine{display:flex!important;align-items:baseline!important;gap:7px!important}
+.symbolLine h1{font-size:18px!important;margin:0!important;letter-spacing:-.02em!important}
+.symbolLine span{font-size:10px!important;color:#9a9aa1!important}
+.symbolLine small{font-size:8px!important;color:#66666e!important;border:1px solid #2c2c30!important;padding:1px 4px!important;border-radius:3px!important}
+.instrumentIdentity p{font-size:8px!important;color:#64646c!important;margin:2px 0 0!important}
+.quoteBlock{display:flex!important;align-items:baseline!important;gap:9px!important;text-align:right!important}
+.quoteBlock strong{font-size:22px!important;letter-spacing:-.02em!important}
+.quoteBlock span{font-size:10px!important}
+.watchToggle{width:30px;height:30px;border:1px solid #303034;border-radius:5px;background:#151517;color:#77777f;display:grid;place-items:center}
+.watchToggle:hover,.watchToggle.active{color:#ffd166;border-color:#625534;background:#2a2415}
+.tradeError{margin:8px 12px!important}
+.terminalCard{flex:1!important;min-height:430px!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:#0f0f10!important}
+.marketChartWrap{height:100%!important}
+.chartControlBar{height:39px!important;padding:0 9px!important;border-bottom:1px solid var(--ml-line)!important}
+.rangeTabs button,.chartTools button{height:28px!important;font-size:8px!important;color:#797981!important}
+.rangeTabs button.active,.chartTools button.active{background:#252529!important;color:#fff!important;border-color:#35353a!important}
+.marketChart{height:calc(100vh - 237px)!important;min-height:410px!important}
+.compactStats{
+  min-height:54px!important;
+  display:grid!important;grid-template-columns:repeat(6,1fr)!important;
+  border-top:1px solid var(--ml-line)!important;border-bottom:0!important;background:#0f0f10!important
+}
+.compactStats>div{padding:8px 11px!important;border-right:1px solid #222226!important;border-bottom:0!important}
+.compactStats span{font-size:7px!important;color:#686870!important}
+.compactStats b{font-size:9px!important;font-family:inherit!important;font-weight:600!important}
+
+/* General classroom pages */
+.pageContainer{max-width:1180px!important;margin:0 auto!important;padding:26px 28px 60px!important}
+.pageHero{min-height:auto!important;padding:0 0 20px!important;margin:0!important;border:0!important}
+.pageHero small{font-size:8px!important;letter-spacing:.12em!important;color:#686870!important}
+.pageHero h1{font-size:25px!important;letter-spacing:-.025em!important;margin:4px 0!important}
+.pageHero p{font-size:10px!important;color:#77777f!important}
+.premiumCard,.summaryCard,.classForm,.classList,.controlPanel,.dataTableCard,.allocationPanel{
+  border:1px solid #2a2a2e!important;
+  border-radius:6px!important;
+  background:#141416!important;
+  box-shadow:none!important;
+}
+.summaryGrid{gap:8px!important;margin-bottom:10px!important}
+.summaryCard{min-height:82px!important;padding:13px 14px!important}
+.summaryCard span{font-size:8px!important;color:#77777f!important}
+.summaryCard strong{font-size:16px!important;font-family:inherit!important;letter-spacing:-.015em!important}
+.summaryCard small{font-size:8px!important;color:#66666e!important}
+.sectionHeading{padding-bottom:10px!important}
+.sectionHeading small{font-size:7px!important;color:#696971!important;letter-spacing:.12em!important}
+.sectionHeading h2{font-size:13px!important;margin:2px 0 0!important}
+.classActionGrid{gap:9px!important}
+.classForm{padding:15px!important}
+.classForm h2{font-size:13px!important}
+.classForm input,.authCard input,.authCard select{
+  height:36px!important;border:1px solid #333338!important;border-radius:5px!important;background:#0f0f10!important;color:#eee!important
+}
+.classList{padding:12px!important}
+.classRow{min-height:53px!important;border-top:1px solid #252529!important}
+.classRow:hover,.classRow.active{background:#1b1b1e!important}
+.classRow.active{box-shadow:inset 2px 0 var(--ml-blue)!important}
+.classRowIcon{border-radius:4px!important;background:#202024!important}
+.classCodeLarge,.classCode{font-variant-numeric:tabular-nums}
+.dataTable th{font-size:7px!important;color:#67676f!important;text-transform:uppercase!important;letter-spacing:.06em!important}
+.dataTable td{font-size:9px!important}
+.dataTable tr{border-color:#242428!important}
+.leaderboardRow,.teacherStudent,.activityRow{border-color:#242428!important}
+.leaderboardRow.you{background:#171d2b!important}
+.leaderAvatar{background:#222226!important;border-color:#36363b!important}
+.toggle{background:#202024!important;border-color:#38383d!important}
+.toggle.on{background:#17342f!important;border-color:#2d5d55!important}
+.toggle.on i{background:#67c8bd!important}
+.emptyPanel{background:#131315!important;border-color:#2a2a2e!important;border-radius:6px!important}
+
+/* Auth */
+.authTop{height:56px!important;background:#0c0c0d!important;border-color:#2a2a2e!important}
+.authCard{background:#141416!important;border-color:#2d2d31!important;border-radius:7px!important;box-shadow:0 24px 80px rgba(0,0,0,.32)!important}
+.authTabs{background:#0f0f10!important;border-color:#2d2d31!important}
+.authTabs button.active{background:#28282c!important}
+
+/* Full chart */
+.marketChartWrap.expanded{inset:56px 0 0 72px!important;background:#0f0f10!important}
+.marketChartWrap.expanded .marketChart{height:100%!important}
+
+/* Responsive */
+@media(max-width:1120px){
+  .appTopbar{grid-template-columns:150px minmax(230px,420px) 1fr!important}
+  .topClassPill{display:none}
+  .shellGrid.withRail{grid-template-columns:64px minmax(0,1fr) 292px!important}
+  .shellGrid{grid-template-columns:64px minmax(0,1fr)!important}
+  .sidebar{padding-left:4px!important;padding-right:4px!important}
+  .sideLink{height:50px!important}
+}
+@media(max-width:900px){
+  .appTopbar{grid-template-columns:140px minmax(220px,1fr) auto!important}
+  .accountText,.signOutLink,.topEquity{display:none!important}
+  .shellGrid.withRail,.shellGrid{grid-template-columns:62px minmax(0,1fr)!important}
+  .rightRail{display:none!important}
+  .marketChart{height:calc(100vh - 235px)!important}
+}
+@media(max-width:680px){
+  .appFrame{min-height:100vh!important;height:auto!important}
+  .appTopbar{height:52px!important;grid-template-columns:auto 1fr auto!important;padding:0 9px!important;position:sticky!important;top:0!important}
+  .brandWord{display:none!important}
+  .globalSearch{display:flex!important;height:32px!important}
+  .globalSearch kbd{display:none}
+  .feedBadge{display:none!important}
+  .accountMenu{display:none!important}
+  .shellGrid,.shellGrid.withRail{display:block!important;height:auto!important}
+  .sidebar{
+    position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;height:56px!important;z-index:80!important;
+    border-right:0!important;border-top:1px solid var(--ml-line)!important;padding:3px 5px!important
+  }
+  .navGroup{width:100%!important;display:grid!important;grid-template-columns:repeat(5,1fr)!important;gap:1px!important}
+  .sideLink{height:49px!important;font-size:7px!important}
+  .sideLink.active{box-shadow:inset 0 -2px var(--ml-blue)!important}
+  .appContent{padding-bottom:58px!important;overflow:visible!important}
+  .instrumentHeader.clean{grid-template-columns:minmax(0,1fr) auto 30px!important;padding:10px!important}
+  .symbolLine span,.symbolLine small{display:none!important}
+  .quoteBlock{gap:5px!important}.quoteBlock strong{font-size:17px!important}.quoteBlock span{font-size:8px!important}
+  .marketChart{height:410px!important}
+  .compactStats{grid-template-columns:repeat(3,1fr)!important}
+  .compactStats>div:nth-child(3){border-right:0!important}
+  .pageContainer{padding:18px 12px 74px!important}
+  .pageHero h1{font-size:22px!important}
+  .summaryGrid.four{grid-template-columns:1fr 1fr!important}
+  .classActionGrid{grid-template-columns:1fr!important}
+  .marketChartWrap.expanded{inset:52px 0 56px 0!important}
+}
