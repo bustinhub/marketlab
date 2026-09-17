@@ -14,6 +14,7 @@ export async function PATCH(request:NextRequest,{params}:{params:Promise<{id:str
   if(typeof body.trading_enabled==="boolean")patch.trading_enabled=body.trading_enabled;
   if(typeof body.public_holdings==="boolean")patch.public_holdings=body.public_holdings;
   if(typeof body.allow_fractional==="boolean")patch.allow_fractional=body.allow_fractional;
+  if(typeof body.market_hours_only==="boolean")patch.market_hours_only=body.market_hours_only;
   if(typeof body.name==="string"&&body.name.trim())patch.name=body.name.trim().slice(0,80);
   if(typeof body.period==="string")patch.period=body.period.trim().slice(0,40)||null;
 
