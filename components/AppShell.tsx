@@ -81,7 +81,7 @@ export function AppShell({children,rightRail}:{children:React.ReactNode;rightRai
         {query&&searching&&<div className="searchStatus">Searching…</div>}
       </div>
       <div className="topbarMeta">
-        <div className={feedMode==="live"?"feedBadge live":"feedBadge"}><i/>{feedMode==="live"?"LIVE":"DATA OFFLINE"}</div>
+        <div className={feedMode==="live"?"feedBadge live":"feedBadge"}><i/>{feedMode==="live"?"LIVE":feedMode==="connecting"?"CONNECTING":"DATA OFFLINE"}</div>
         {user&&activeClass?.member_role==="student"&&<div className="topEquity"><span>Portfolio</span><strong>{"$"}{equity.toLocaleString("en-US",{maximumFractionDigits:0})}</strong></div>}
         {user?<div className="accountMenu"><button className="userAvatar" title={profile?.display_name||user.email||""}>{initials}</button><button className="signOutLink" onClick={()=>void signOut()}>Sign out</button></div>:<Link className="topSignIn" href="/login"><LogIn size={14}/> Sign in</Link>}
       </div>
