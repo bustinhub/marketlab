@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Bell, Plus, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { AppShell } from "./AppShell";
 import { MarketChart } from "./MarketChart";
 import { WatchlistRail } from "./WatchlistRail";
@@ -36,8 +36,6 @@ export function TradeScreen({initialSymbol="AAPL"}:{initialSymbol?:string}){
       </div>
       <div className="instrumentActions">
         <button className={onWatchlist?"iconTextButton active":"iconTextButton"} onClick={()=>toggleWatchlist(symbol)}><Star size={16} fill={onWatchlist?"currentColor":"none"}/>{onWatchlist?"Watching":"Watch"}</button>
-        <button className="iconButton" title="Price alert"><Bell size={16}/></button>
-        <button className="iconButton" title="Add"><Plus size={16}/></button>
       </div>
       <div className="quoteBlock">
         <strong>{quote?money(quote.price,quote.currency):quoteLoading?"Loading…":"—"}</strong>
