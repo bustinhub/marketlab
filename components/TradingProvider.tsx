@@ -132,7 +132,7 @@ export function TradingProvider({children}:{children:React.ReactNode}){
     finally{setPortfolioLoading(false)}
   }
 
-  useEffect(()=>{void loadQuote(selected);const id=setInterval(()=>void loadQuote(selected),15000);return()=>clearInterval(id)},[selected]);
+  useEffect(()=>{void loadQuote(selected);const id=setInterval(()=>void loadQuote(selected),5000);return()=>clearInterval(id)},[selected]);
 
   useEffect(()=>{
     const symbols=[...watchlist,...holdings.map(h=>h.symbol)];
