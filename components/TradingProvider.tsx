@@ -1,142 +1,175 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { MARKET_SYMBOLS, type MarketSymbol } from "@/lib/market";
+import { useAuth } from "./AuthProvider";
+import { useClassroom } from "./ClassroomProvider";
 
-export type Holding = { symbol:string; shares:number; avgCost:number };
-export type Trade = { id:string; symbol:string; side:"BUY"|"SELL"; shares:number; price:number; total:number; createdAt:string };
-type FeedMode = "demo" | "live";
+export type MarketQuote={
+  symbol:string;name:string;exchange:string;currency:string;price:number;
+  open:number;high:number;low:number;previousClose:number;change:number;changePercent:number;volume:number;
+  datetime:string;timestamp:number;
+};
+export type Holding={symbol:string;shares:number;avgCost:number};
+export type Trade={id:string;symbol:string;side:"BUY"|"SELL";shares:number;price:number;total:number;createdAt:string};
 
-type TradingContextValue = {
-  stocks:MarketSymbol[];
+type TradingContextValue={
   selected:string;
-  setSelected:(s:string)=>void;
+  setSelected:(symbol:string)=>void;
+  quote:MarketQuote|null;
+  quotes:Record<string,MarketQuote>;
+  quoteLoading:boolean;
+  marketError:string|null;
+  feedMode:"live"|"unavailable";
   cash:number;
+  startingBalance:number;
   holdings:Holding[];
   trades:Trade[];
   watchlist:string[];
-  feedMode:FeedMode;
   equity:number;
   invested:number;
   totalReturn:number;
-  execute:(input:{symbol:string;side:"BUY"|"SELL";shares:number})=>{ok:boolean;message:string};
+  portfolioLoading:boolean;
+  portfolioReady:boolean;
+  loadQuote:(symbol:string)=>Promise<MarketQuote|null>;
+  refreshPortfolio:()=>Promise<void>;
+  execute:(input:{symbol:string;side:"BUY"|"SELL";shares:number})=>Promise<{ok:boolean;message:string}>;
   toggleWatchlist:(symbol:string)=>void;
-  resetPortfolio:()=>void;
 };
 
-const TradingContext = createContext<TradingContextValue | null>(null);
-const STORAGE_KEY = "marketlab-v2-state";
+const TradingContext=createContext<TradingContextValue|null>(null);
+const WATCHLIST_KEY="marketlab-watchlist";
 
-export function TradingProvider({ children }:{children:React.ReactNode}) {
-  const [stocks,setStocks] = useState<MarketSymbol[]>(MARKET_SYMBOLS);
-  const [selected,setSelected] = useState("AAPL");
-  const [cash,setCash] = useState(100000);
-  const [holdings,setHoldings] = useState<Holding[]>([]);
-  const [trades,setTrades] = useState<Trade[]>([]);
-  const [watchlist,setWatchlist] = useState(["AAPL","NVDA","TSLA","AMZN","MSFT","GOOGL"]);
-  const [feedMode,setFeedMode] = useState<FeedMode>("demo");
-  const [hydrated,setHydrated] = useState(false);
+export function TradingProvider({children}:{children:React.ReactNode}){
+  const {user,token}=useAuth();
+  const {activeClass}=useClassroom();
+  const [selected,setSelectedState]=useState("AAPL");
+  const [quotes,setQuotes]=useState<Record<string,MarketQuote>>({});
+  const [quoteLoading,setQuoteLoading]=useState(false);
+  const [marketError,setMarketError]=useState<string|null>(null);
+  const [cash,setCash]=useState(0);
+  const [startingBalance,setStartingBalance]=useState(0);
+  const [holdings,setHoldings]=useState<Holding[]>([]);
+  const [trades,setTrades]=useState<Trade[]>([]);
+  const [portfolioLoading,setPortfolioLoading]=useState(false);
+  const [portfolioReady,setPortfolioReady]=useState(false);
+  const [watchlist,setWatchlist]=useState<string[]>(["AAPL","NVDA","TSLA","MSFT","AMZN"]);
 
   useEffect(()=>{
     try{
-      const raw=localStorage.getItem(STORAGE_KEY);
-      if(raw){
-        const saved=JSON.parse(raw);
-        if(typeof saved.cash==="number") setCash(saved.cash);
-        if(Array.isArray(saved.holdings)) setHoldings(saved.holdings);
-        if(Array.isArray(saved.trades)) setTrades(saved.trades);
-        if(Array.isArray(saved.watchlist)) setWatchlist(saved.watchlist);
-      }
+      const saved=JSON.parse(localStorage.getItem(WATCHLIST_KEY)||"null");
+      if(Array.isArray(saved)&&saved.length)setWatchlist(saved.slice(0,20));
     }catch{}
-    setHydrated(true);
   },[]);
 
-  useEffect(()=>{
-    if(!hydrated) return;
-    localStorage.setItem(STORAGE_KEY,JSON.stringify({cash,holdings,trades,watchlist}));
-  },[cash,holdings,trades,watchlist,hydrated]);
+  function setSelected(symbol:string){
+    const next=symbol.trim().toUpperCase();
+    if(next)setSelectedState(next);
+  }
 
-  useEffect(()=>{
-    const timer=setInterval(()=>{
-      if(feedMode==="live") return;
-      setStocks(prev=>prev.map(s=>{
-        const drift=(Math.random()-.49)*.00125;
-        return {...s,price:Math.max(1,s.price*(1+drift)),changePercent:s.changePercent+drift*100};
-      }));
-    },1200);
-    return ()=>clearInterval(timer);
-  },[feedMode]);
+  async function loadQuote(symbol:string){
+    const clean=symbol.trim().toUpperCase();
+    if(!clean)return null;
+    setQuoteLoading(true);
+    try{
+      const res=await fetch("/api/market/quote?symbol="+encodeURIComponent(clean),{cache:"no-store"});
+      const data=await res.json();
+      if(!res.ok||!data.quote)throw new Error(data.error||"Quote unavailable.");
+      setQuotes(prev=>({...prev,[clean]:data.quote}));
+      setMarketError(null);
+      return data.quote as MarketQuote;
+    }catch(error:any){
+      setMarketError(error?.message||"Live market data unavailable.");
+      return null;
+    }finally{setQuoteLoading(false)}
+  }
 
-  useEffect(()=>{
-    let cancelled=false;
-    async function sync(){
-      try{
-        const symbols=MARKET_SYMBOLS.map(s=>s.symbol).join(",");
-        const res=await fetch(`/api/quotes?symbols=${symbols}`,{cache:"no-store"});
-        if(!res.ok) return;
-        const data=await res.json();
-        if(cancelled || data.source!=="live" || !Array.isArray(data.quotes)) return;
-        setFeedMode("live");
-        setStocks(prev=>prev.map(s=>{
-          const q=data.quotes.find((x:{symbol:string})=>x.symbol===s.symbol);
-          return q ? {...s,price:q.price,changePercent:q.changePercent} : s;
-        }));
-      }catch{}
+  async function refreshQuotes(symbols:string[]){
+    const clean=[...new Set(symbols.map(s=>s.toUpperCase()).filter(Boolean))].slice(0,12);
+    if(!clean.length)return;
+    try{
+      const res=await fetch("/api/market/quotes?symbols="+encodeURIComponent(clean.join(",")),{cache:"no-store"});
+      const data=await res.json();
+      if(!res.ok)throw new Error(data.error||"Quotes unavailable.");
+      const next:Record<string,MarketQuote>={};
+      for(const q of data.quotes||[])next[q.symbol]=q;
+      if(Object.keys(next).length)setQuotes(prev=>({...prev,...next}));
+      setMarketError(null);
+    }catch(error:any){
+      setMarketError(error?.message||"Live market data unavailable.");
     }
-    sync();
-    const id=setInterval(sync,15000);
-    return ()=>{cancelled=true;clearInterval(id)};
-  },[]);
+  }
+
+  async function refreshPortfolio(){
+    if(!user||!activeClass||activeClass.member_role!=="student"){
+      setCash(0);setStartingBalance(0);setHoldings([]);setTrades([]);setPortfolioReady(false);return;
+    }
+    const access=token();if(!access)return;
+    setPortfolioLoading(true);
+    try{
+      const res=await fetch("/api/portfolio?classId="+encodeURIComponent(activeClass.id),{headers:{Authorization:"Bearer "+access},cache:"no-store"});
+      const data=await res.json();
+      if(!res.ok)throw new Error(data.error||"Portfolio unavailable.");
+      if(!data.portfolio){setPortfolioReady(false);return}
+      setCash(Number(data.portfolio.cash_balance));
+      setStartingBalance(Number(data.portfolio.starting_balance));
+      setHoldings((data.holdings||[]).map((h:any)=>({symbol:h.symbol,shares:Number(h.shares),avgCost:Number(h.avg_cost)})));
+      setTrades((data.trades||[]).map((t:any)=>({id:t.id,symbol:t.symbol,side:t.side,shares:Number(t.shares),price:Number(t.price),total:Number(t.total),createdAt:t.executed_at})));
+      setPortfolioReady(true);
+    }catch{setPortfolioReady(false)}
+    finally{setPortfolioLoading(false)}
+  }
+
+  useEffect(()=>{void loadQuote(selected);const id=setInterval(()=>void loadQuote(selected),15000);return()=>clearInterval(id)},[selected]);
+
+  useEffect(()=>{
+    const symbols=[...watchlist,...holdings.map(h=>h.symbol)];
+    void refreshQuotes(symbols);
+    const id=setInterval(()=>void refreshQuotes(symbols),60000);
+    return()=>clearInterval(id);
+  },[watchlist.join(","),holdings.map(h=>h.symbol).join(",")]);
+
+  useEffect(()=>{void refreshPortfolio()},[user?.id,activeClass?.id]);
 
   const invested=useMemo(()=>holdings.reduce((sum,h)=>{
-    const p=stocks.find(s=>s.symbol===h.symbol)?.price ?? h.avgCost;
-    return sum+p*h.shares;
-  },0),[holdings,stocks]);
+    const price=quotes[h.symbol]?.price??h.avgCost;
+    return sum+price*h.shares;
+  },0),[holdings,quotes]);
   const equity=cash+invested;
-  const totalReturn=((equity-100000)/100000)*100;
+  const totalReturn=startingBalance?((equity-startingBalance)/startingBalance)*100:0;
 
-  function execute({symbol,side,shares}:{symbol:string;side:"BUY"|"SELL";shares:number}){
-    const stock=stocks.find(s=>s.symbol===symbol);
-    if(!stock || !Number.isFinite(shares) || shares<=0) return {ok:false,message:"Enter a valid share amount."};
-    const total=stock.price*shares;
-    const current=holdings.find(h=>h.symbol===symbol);
-
-    if(side==="BUY"){
-      if(total>cash) return {ok:false,message:"Not enough buying power for this order."};
-      setCash(v=>v-total);
-      setHoldings(prev=>{
-        if(!current) return [...prev,{symbol,shares,avgCost:stock.price}];
-        const nextShares=current.shares+shares;
-        const avgCost=(current.avgCost*current.shares+stock.price*shares)/nextShares;
-        return prev.map(h=>h.symbol===symbol?{...h,shares:nextShares,avgCost}:h);
-      });
-    }else{
-      if(!current || shares>current.shares) return {ok:false,message:"You do not own enough shares to sell."};
-      setCash(v=>v+total);
-      setHoldings(prev=>prev.map(h=>h.symbol===symbol?{...h,shares:h.shares-shares}:h).filter(h=>h.shares>.000001));
-    }
-
-    setTrades(prev=>[{
-      id:crypto.randomUUID(),symbol,side,shares,price:stock.price,total,createdAt:new Date().toISOString()
-    },...prev].slice(0,100));
-    return {ok:true,message:`${side==="BUY"?"Bought":"Sold"} ${shares.toFixed(4)} ${symbol} @ $${stock.price.toFixed(2)}`};
+  async function execute(input:{symbol:string;side:"BUY"|"SELL";shares:number}){
+    if(!user)return {ok:false,message:"Sign in to trade."};
+    if(!activeClass)return {ok:false,message:"Join a class first."};
+    if(activeClass.member_role!=="student")return {ok:false,message:"Teacher accounts do not have student portfolios."};
+    const access=token();if(!access)return {ok:false,message:"Session expired."};
+    try{
+      const res=await fetch("/api/trade",{method:"POST",headers:{"content-type":"application/json",Authorization:"Bearer "+access},body:JSON.stringify({classId:activeClass.id,...input})});
+      const data=await res.json();
+      if(!res.ok)return {ok:false,message:data.error||"Order failed."};
+      if(data.quote)setQuotes(prev=>({...prev,[data.quote.symbol]:data.quote}));
+      await refreshPortfolio();
+      return {ok:true,message:(input.side==="BUY"?"Bought ":"Sold ")+input.shares.toFixed(4)+" "+input.symbol+" @ $"+Number(data.quote.price).toFixed(2)};
+    }catch{return {ok:false,message:"Order could not be submitted."}}
   }
 
   function toggleWatchlist(symbol:string){
-    setWatchlist(prev=>prev.includes(symbol)?prev.filter(x=>x!==symbol):[...prev,symbol]);
-  }
-
-  function resetPortfolio(){
-    setCash(100000);setHoldings([]);setTrades([]);
+    const clean=symbol.toUpperCase();
+    setWatchlist(prev=>{
+      const next=prev.includes(clean)?prev.filter(s=>s!==clean):[...prev,clean].slice(0,20);
+      localStorage.setItem(WATCHLIST_KEY,JSON.stringify(next));
+      return next;
+    });
   }
 
   return <TradingContext.Provider value={{
-    stocks,selected,setSelected,cash,holdings,trades,watchlist,feedMode,equity,invested,totalReturn,execute,toggleWatchlist,resetPortfolio
+    selected,setSelected,quote:quotes[selected]??null,quotes,quoteLoading,marketError,
+    feedMode:marketError?"unavailable":"live",cash,startingBalance,holdings,trades,watchlist,equity,invested,totalReturn,
+    portfolioLoading,portfolioReady,loadQuote,refreshPortfolio,execute,toggleWatchlist
   }}>{children}</TradingContext.Provider>;
 }
 
 export function useTrading(){
   const value=useContext(TradingContext);
-  if(!value) throw new Error("useTrading must be used inside TradingProvider");
+  if(!value)throw new Error("useTrading must be inside TradingProvider");
   return value;
 }
