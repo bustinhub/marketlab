@@ -52,7 +52,7 @@ export default function PortfolioPage(){
       <section className="premiumCard dataTableCard">
         <div className="sectionHeading"><div><small>POSITIONS</small><h2>Holdings</h2></div></div>
         {allocations.length?<div className="tableScroll"><table className="dataTable"><thead><tr><th>Company</th><th>Shares</th><th>Avg. cost</th><th>Last price</th><th>Market value</th><th>Return</th><th>Allocation</th></tr></thead><tbody>
-          {allocations.map(a=><tr key={a.symbol}><td><div className="tableSymbol"><i style={{background:a.stock?.color}}/ ><span><b>{a.symbol}</b><small>{a.stock?.name}</small></span></div></td><td>{a.shares.toFixed(4)}</td><td>{money(a.avgCost)}</td><td>{money(a.stock?.price??a.avgCost)}</td><td><b>{money(a.value)}</b></td><td className={a.returnPct>=0?"up":"down"}>{a.returnPct>=0?<ArrowUpRight size={14}/>:<ArrowDownRight size={14}/>} {pct(a.returnPct)}</td><td>{a.weight.toFixed(1)}%</td></tr>)}
+          {allocations.map(a=><tr key={a.symbol}><td><div className="tableSymbol"><i style={{background:a.stock?.color}}/><span><b>{a.symbol}</b><small>{a.stock?.name}</small></span></div></td><td>{a.shares.toFixed(4)}</td><td>{money(a.avgCost)}</td><td>{money(a.stock?.price??a.avgCost)}</td><td><b>{money(a.value)}</b></td><td className={a.returnPct>=0?"up":"down"}>{a.returnPct>=0?<ArrowUpRight size={14}/>:<ArrowDownRight size={14}/>} {pct(a.returnPct)}</td><td>{a.weight.toFixed(1)}%</td></tr>)}
         </tbody></table></div>:<div className="emptyRow">No holdings yet. Your first trade will show up here.</div>}
       </section>
 
