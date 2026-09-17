@@ -15,7 +15,7 @@ export function TradeScreen({initialSymbol="AAPL"}:{initialSymbol?:string}){
   useEffect(()=>{
     const symbol=initialSymbol.toUpperCase();
     if(stocks.some(s=>s.symbol===symbol)) setSelected(symbol);
-  },[initialSymbol,setSelected,stocks]);
+  },[initialSymbol,setSelected]);
 
   const stock=stocks.find(s=>s.symbol===selected)??stocks[0];
   const dayChange=stock.price*(stock.changePercent/100);
