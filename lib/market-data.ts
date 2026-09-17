@@ -53,19 +53,59 @@ export async function getQuote(symbol:string){
     volume:Number(q.volume||0),
     datetime:String(q.datetime||""),
     timestamp:Number(q.timestamp||0),
+    isMarketOpen:Boolean((q as any).is_market_open),
   };
 }
 
 export async function getQuotes(symbols:string[]){
-  const unique=[...new Set(symbols.map(s=>s.toUpperCase()).filter(Boolean))].slice(0,60);
-  const chunks=[];
-  for(let i=0;i<unique.length;i+=8)chunks.push(unique.slice(i,i+8));
-  const results:any[]=[];
-  for(const chunk of chunks){
-    const settled=await Promise.allSettled(chunk.map(getQuote));
-    for(const item of settled)if(item.status==="fulfilled")results.push(item.value);
+  const unique=[...new Set(symbols.map(s=>s.toUpperCase()).filter(Boolean))].slice(0,100);
+  if(!unique.length)return [];
+  const data=await td("/quote",{symbol:unique.join(",")});
+
+  if(unique.length===1){
+    const q:any=data;
+    const close=Number(q.close||0);
+    return close?[{
+      symbol:String(q.symbol||unique[0]).toUpperCase(),
+      name:String(q.name||q.symbol||unique[0]),
+      exchange:String(q.exchange||""),
+      currency:String(q.currency||"USD"),
+      price:close,
+      open:Number(q.open||0),
+      high:Number(q.high||0),
+      low:Number(q.low||0),
+      previousClose:Number(q.previous_close||0),
+      change:Number(q.change||0),
+      changePercent:Number(q.percent_change||0),
+      volume:Number(q.volume||0),
+      datetime:String(q.datetime||""),
+      timestamp:Number(q.timestamp||0),
+      isMarketOpen:Boolean(q.is_market_open),
+    }]:[];
   }
-  return results;
+
+  return Object.entries(data||{}).flatMap(([symbol,value]:[string,any])=>{
+    if(!value||value.status==="error")return [];
+    const close=Number(value.close||0);
+    if(!close)return [];
+    return [{
+      symbol:String(value.symbol||symbol).toUpperCase(),
+      name:String(value.name||value.symbol||symbol),
+      exchange:String(value.exchange||""),
+      currency:String(value.currency||"USD"),
+      price:close,
+      open:Number(value.open||0),
+      high:Number(value.high||0),
+      low:Number(value.low||0),
+      previousClose:Number(value.previous_close||0),
+      change:Number(value.change||0),
+      changePercent:Number(value.percent_change||0),
+      volume:Number(value.volume||0),
+      datetime:String(value.datetime||""),
+      timestamp:Number(value.timestamp||0),
+      isMarketOpen:Boolean(value.is_market_open),
+    }];
+  });
 }
 
 export async function getCandles(symbol:string,interval:string,outputsize:number){
