@@ -365,3 +365,18 @@ body{font-family:var(--sans);letter-spacing:0}
 @media(max-width:680px){
   .shellGrid.withRail{display:block}.simpleHero{padding:55px 16px}.simpleHeroCopy h1{font-size:44px}.simpleFeatures{grid-template-columns:1fr;padding-left:16px;padding-right:16px}.classRow{grid-template-columns:34px 1fr 90px}.classRow>em{display:none}.twoFields{grid-template-columns:1fr}
 }
+
+.marketChartWrap.expanded{
+  position:fixed!important;
+  inset:60px 0 0 0;
+  z-index:100;
+  background:#0b0b0c;
+  display:flex;
+  flex-direction:column;
+}
+.marketChartWrap.expanded .chartControlBar{flex:0 0 44px}
+.marketChartWrap.expanded .chartStage{flex:1;min-height:0}
+.marketChartWrap.expanded .marketChart{height:100%!important}
+@media(max-width:680px){
+  .marketChartWrap.expanded{inset:60px 0 56px 0}
+}
