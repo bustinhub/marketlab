@@ -1,99 +1,123 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AreaSeries, CandlestickSeries, ColorType, CrosshairMode, createChart, HistogramSeries, type UTCTimestamp } from "lightweight-charts";
 import { CandlestickChart, Expand, LineChart, RotateCcw } from "lucide-react";
 
-function seeded(symbol:string,index:number){
-  let n=0;
-  for(const c of symbol)n=(n*31+c.charCodeAt(0))%9973;
-  const x=Math.sin((n+index)*12.9898)*43758.5453;
-  return x-Math.floor(x);
-}
+const ranges:Record<string,{interval:string;outputsize:number}>={
+  "1D":{interval:"5min",outputsize:90},
+  "5D":{interval:"30min",outputsize:100},
+  "1M":{interval:"1h",outputsize:180},
+  "3M":{interval:"1day",outputsize:95},
+  "6M":{interval:"1day",outputsize:190},
+  "YTD":{interval:"1day",outputsize:280},
+  "1Y":{interval:"1day",outputsize:365},
+  "5Y":{interval:"1week",outputsize:270},
+};
 
-function buildSeries(symbol:string,price:number,count=110){
-  const rows:{time:UTCTimestamp;open:number;high:number;low:number;close:number;volume:number}[]=[];
-  const now=Math.floor(Date.now()/300000)*300;
-  let last=price*.94;
-  for(let i=count-1;i>=0;i--){
-    const r1=seeded(symbol,i*3+1),r2=seeded(symbol,i*3+2),r3=seeded(symbol,i*3+3);
-    const open=last;
-    const close=Math.max(1,open*(1+(r1-.47)*.012));
-    const high=Math.max(open,close)*(1+r2*.0055);
-    const low=Math.min(open,close)*(1-r3*.0055);
-    rows.push({time:(now-i*300) as UTCTimestamp,open,high,low,close,volume:Math.round(750000+r2*6500000)});
-    last=close;
-  }
-  const factor=price/rows[rows.length-1].close;
-  return rows.map(r=>({...r,open:r.open*factor,high:r.high*factor,low:r.low*factor,close:r.close*factor}));
+function unix(datetime:string):UTCTimestamp{
+  const normalized=datetime.includes("T")?datetime:datetime.replace(" ","T");
+  return Math.floor(new Date(normalized+"Z").getTime()/1000) as UTCTimestamp;
 }
 
 export function MarketChart({symbol,price}:{symbol:string;price:number}){
   const host=useRef<HTMLDivElement|null>(null);
-  const priceSeries=useRef<any>(null);
-  const lastBar=useRef<{time:UTCTimestamp;open:number;high:number;low:number;close:number}|null>(null);
+  const chartRef=useRef<any>(null);
+  const seriesRef=useRef<any>(null);
+  const lastRef=useRef<any>(null);
   const [style,setStyle]=useState<"candles"|"area">("candles");
   const [range,setRange]=useState("1D");
   const [expanded,setExpanded]=useState(false);
-  const base=useMemo(()=>buildSeries(symbol,price),[symbol]);
+  const [rows,setRows]=useState<any[]>([]);
+  const [loading,setLoading]=useState(true);
+  const [error,setError]=useState("");
 
   useEffect(()=>{
-    if(!host.current)return;
+    let cancelled=false;
+    async function load(){
+      setLoading(true);setError("");
+      const cfg=ranges[range];
+      try{
+        const res=await fetch("/api/market/candles?symbol="+encodeURIComponent(symbol)+"&interval="+cfg.interval+"&outputsize="+cfg.outputsize,{cache:"no-store"});
+        const data=await res.json();
+        if(cancelled)return;
+        if(!res.ok||!Array.isArray(data.values)||!data.values.length)throw new Error(data.error||"Chart data unavailable.");
+        setRows(data.values);
+      }catch(e:any){
+        if(!cancelled){setRows([]);setError(e?.message||"Chart data unavailable.");}
+      }finally{if(!cancelled)setLoading(false)}
+    }
+    void load();
+    return()=>{cancelled=true};
+  },[symbol,range]);
+
+  useEffect(()=>{
+    if(!host.current||!rows.length)return;
     host.current.innerHTML="";
     const chart=createChart(host.current,{
       autoSize:true,
-      height:expanded?690:500,
-      layout:{background:{type:ColorType.Solid,color:"#080d13"},textColor:"#7f8b99",fontFamily:"Inter, ui-sans-serif, system-ui"},
-      grid:{vertLines:{color:"#111923"},horzLines:{color:"#111923"}},
-      rightPriceScale:{borderColor:"#1c2632",scaleMargins:{top:.08,bottom:.22}},
-      timeScale:{borderColor:"#1c2632",timeVisible:true,secondsVisible:false,rightOffset:4,barSpacing:8},
-      crosshair:{mode:CrosshairMode.Normal,vertLine:{color:"#46566a",width:1,labelBackgroundColor:"#253244"},horzLine:{color:"#46566a",width:1,labelBackgroundColor:"#253244"}},
+      height:expanded?700:510,
+      layout:{background:{type:ColorType.Solid,color:"#080b0f"},textColor:"#787f89",fontFamily:'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif'},
+      grid:{vertLines:{color:"#15191f"},horzLines:{color:"#15191f"}},
+      rightPriceScale:{borderColor:"#242930",scaleMargins:{top:.08,bottom:.2}},
+      timeScale:{borderColor:"#242930",timeVisible:true,secondsVisible:false,rightOffset:3,barSpacing:7},
+      crosshair:{mode:CrosshairMode.Normal,vertLine:{color:"#565e68",width:1,labelBackgroundColor:"#363d46"},horzLine:{color:"#565e68",width:1,labelBackgroundColor:"#363d46"}},
       handleScale:true,handleScroll:true,
     });
-    const latest=base[base.length-1];
-    lastBar.current={time:latest.time,open:latest.open,high:latest.high,low:latest.low,close:latest.close};
+    chartRef.current=chart;
+
+    const mapped=rows.map(r=>({time:unix(r.datetime),open:Number(r.open),high:Number(r.high),low:Number(r.low),close:Number(r.close),volume:Number(r.volume||0)}));
+    const last=mapped[mapped.length-1];
+    lastRef.current=last;
 
     if(style==="candles"){
-      const series=chart.addSeries(CandlestickSeries,{upColor:"#2bd3a3",downColor:"#f25f70",borderVisible:false,wickUpColor:"#2bd3a3",wickDownColor:"#f25f70"});
-      series.setData(base.map(({time,open,high,low,close})=>({time,open,high,low,close})));
-      priceSeries.current=series;
+      const series=chart.addSeries(CandlestickSeries,{
+        upColor:"#26a69a",downColor:"#ef5350",borderVisible:false,wickUpColor:"#26a69a",wickDownColor:"#ef5350"
+      });
+      series.setData(mapped.map(({time,open,high,low,close})=>({time,open,high,low,close})));
+      seriesRef.current=series;
     }else{
-      const series=chart.addSeries(AreaSeries,{lineColor:"#72a8ff",topColor:"rgba(114,168,255,.24)",bottomColor:"rgba(114,168,255,0)",lineWidth:2});
-      series.setData(base.map(r=>({time:r.time,value:r.close})));
-      priceSeries.current=series;
+      const series=chart.addSeries(AreaSeries,{
+        lineColor:"#4f9b8f",topColor:"rgba(79,155,143,.22)",bottomColor:"rgba(79,155,143,0)",lineWidth:2
+      });
+      series.setData(mapped.map(r=>({time:r.time,value:r.close})));
+      seriesRef.current=series;
     }
-    const volume=chart.addSeries(HistogramSeries,{priceScaleId:"vol",priceFormat:{type:"volume"}});
+
+    const volume=chart.addSeries(HistogramSeries,{priceScaleId:"volume",priceFormat:{type:"volume"}});
     volume.priceScale().applyOptions({scaleMargins:{top:.82,bottom:0}});
-    volume.setData(base.map(r=>({time:r.time,value:r.volume,color:r.close>=r.open?"rgba(43,211,163,.22)":"rgba(242,95,112,.22)"})));
+    volume.setData(mapped.map(r=>({time:r.time,value:r.volume,color:r.close>=r.open?"rgba(38,166,154,.26)":"rgba(239,83,80,.24)"})));
     chart.timeScale().fitContent();
-    return()=>{priceSeries.current=null;chart.remove()};
-  },[symbol,style,range,expanded,base]);
+
+    return()=>{seriesRef.current=null;lastRef.current=null;chartRef.current=null;chart.remove()};
+  },[rows,style,expanded]);
 
   useEffect(()=>{
-    const series=priceSeries.current;
-    const last=lastBar.current;
-    if(!series||!last)return;
+    const series=seriesRef.current,last=lastRef.current;
+    if(!series||!last||!price)return;
     if(style==="candles"){
       const next={time:last.time,open:last.open,high:Math.max(last.high,price),low:Math.min(last.low,price),close:price};
-      lastBar.current=next;
-      series.update(next);
+      lastRef.current=next;series.update(next);
     }else{
       series.update({time:last.time,value:price});
-      lastBar.current={...last,close:price,high:Math.max(last.high,price),low:Math.min(last.low,price)};
+      lastRef.current={...last,close:price,high:Math.max(last.high,price),low:Math.min(last.low,price)};
     }
   },[price,style]);
 
   return <div className={expanded?"marketChartWrap expanded":"marketChartWrap"}>
     <div className="chartControlBar">
-      <div className="rangeTabs">{["1D","5D","1M","3M","6M","YTD","1Y","5Y"].map(x=><button key={x} className={range===x?"active":""} onClick={()=>setRange(x)}>{x}</button>)}</div>
+      <div className="rangeTabs">{Object.keys(ranges).map(x=><button key={x} className={range===x?"active":""} onClick={()=>setRange(x)}>{x}</button>)}</div>
       <div className="chartTools">
         <button className={style==="candles"?"active":""} onClick={()=>setStyle("candles")} title="Candles"><CandlestickChart size={16}/></button>
         <button className={style==="area"?"active":""} onClick={()=>setStyle("area")} title="Line"><LineChart size={16}/></button>
-        <button onClick={()=>setRange("1D")} title="Reset"><RotateCcw size={15}/></button>
+        <button onClick={()=>chartRef.current?.timeScale().fitContent()} title="Reset view"><RotateCcw size={15}/></button>
         <button onClick={()=>setExpanded(v=>!v)} title="Expand chart"><Expand size={15}/></button>
       </div>
     </div>
-    <div ref={host} className="marketChart"/>
-    <div className="chartHint">Drag to inspect · scroll to zoom · move across candles for exact OHLC values</div>
+    <div className="chartStage">
+      <div ref={host} className="marketChart"/>
+      {loading&&<div className="chartOverlay">Loading {symbol}…</div>}
+      {!loading&&error&&<div className="chartOverlay error">{error}</div>}
+    </div>
   </div>;
 }
