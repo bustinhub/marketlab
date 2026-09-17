@@ -67,35 +67,25 @@ export async function getQuote(symbol:string){
 export async function getQuotes(symbols:string[]){
   const unique=[...new Set(symbols.map(s=>s.toUpperCase()).filter(Boolean))].slice(0,100);
   if(!unique.length)return [];
-  const data=await td("/quote",{symbol:unique.join(",")});
 
-  if(unique.length===1){
-    const q:any=data;
-    const close=Number(q.close||0);
-    return close?[{
-      symbol:String(q.symbol||unique[0]).toUpperCase(),
-      name:String(q.name||q.symbol||unique[0]),
-      exchange:String(q.exchange||""),
-      currency:String(q.currency||"USD"),
-      price:close,
-      open:Number(q.open||0),
-      high:Number(q.high||0),
-      low:Number(q.low||0),
-      previousClose:Number(q.previous_close||0),
-      change:Number(q.change||0),
-      changePercent:Number(q.percent_change||0),
-      volume:Number(q.volume||0),
-      datetime:String(q.datetime||""),
-      timestamp:Number(q.timestamp||0),
-      isMarketOpen:Boolean(q.is_market_open),
-    }]:[];
+  const now=Date.now();
+  const cachedResults:any[]=[];
+  const missing:string[]=[];
+  for(const symbol of unique){
+    const cached=quoteCache.get(symbol);
+    if(cached&&cached.expires>now)cachedResults.push(cached.data);
+    else missing.push(symbol);
   }
+  if(!missing.length)return cachedResults;
 
-  return Object.entries(data||{}).flatMap(([symbol,value]:[string,any])=>{
-    if(!value||value.status==="error")return [];
+  const data=await td("/quote",{symbol:missing.join(",")});
+  const fresh:any[]=[];
+
+  const normalize=(symbol:string,value:any)=>{
+    if(!value||value.status==="error")return null;
     const close=Number(value.close||0);
-    if(!close)return [];
-    return [{
+    if(!close)return null;
+    return {
       symbol:String(value.symbol||symbol).toUpperCase(),
       name:String(value.name||value.symbol||symbol),
       exchange:String(value.exchange||""),
@@ -111,8 +101,21 @@ export async function getQuotes(symbols:string[]){
       datetime:String(value.datetime||""),
       timestamp:Number(value.timestamp||0),
       isMarketOpen:Boolean(value.is_market_open),
-    }];
-  });
+    };
+  };
+
+  if(missing.length===1){
+    const normalized=normalize(missing[0],data);
+    if(normalized)fresh.push(normalized);
+  }else{
+    for(const [symbol,value] of Object.entries(data||{})){
+      const normalized=normalize(symbol,value);
+      if(normalized)fresh.push(normalized);
+    }
+  }
+
+  for(const quote of fresh)quoteCache.set(quote.symbol,{expires:Date.now()+5000,data:quote});
+  return [...cachedResults,...fresh];
 }
 
 export async function getCandles(symbol:string,interval:string,outputsize:number){
