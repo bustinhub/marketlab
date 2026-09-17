@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BarChart3, BookOpen, GraduationCap, LogIn, Search, Settings, Trophy, Users, WalletCards } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { BarChart3, BookOpen, GraduationCap, LogIn, Search, Trophy, Users, WalletCards } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BrandLogo } from "./BrandLogo";
 import { useTrading } from "./TradingProvider";
 import { useAuth } from "./AuthProvider";
@@ -18,8 +18,18 @@ export function AppShell({children,rightRail}:{children:React.ReactNode;rightRai
   const {user,profile,signOut}=useAuth();
   const {activeClass,classes}=useClassroom();
   const [query,setQuery]=useState("");
+  const searchInput=useRef<HTMLInputElement|null>(null);
   const [results,setResults]=useState<SearchResult[]>([]);
   const [searching,setSearching]=useState(false);
+
+  useEffect(()=>{
+    const onKey=(event:KeyboardEvent)=>{
+      if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="k"){event.preventDefault();searchInput.current?.focus()}
+      if(event.key==="/"&&document.activeElement?.tagName!=="INPUT"&&document.activeElement?.tagName!=="TEXTAREA"){event.preventDefault();searchInput.current?.focus()}
+    };
+    window.addEventListener("keydown",onKey);
+    return()=>window.removeEventListener("keydown",onKey);
+  },[]);
 
   useEffect(()=>{
     const q=query.trim();
@@ -59,8 +69,8 @@ export function AppShell({children,rightRail}:{children:React.ReactNode;rightRai
       <BrandLogo/>
       <div className="globalSearch">
         <Search size={16}/>
-        <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search all U.S. stocks and ETFs"/>
-        <kbd>/</kbd>
+        <input ref={searchInput} value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search all U.S. stocks and ETFs"/>
+        <kbd>Ctrl K</kbd>
         {(query&&results.length>0)&&<div className="globalSearchMenu">
           {results.map(s=><button key={s.exchange+":"+s.symbol} onClick={()=>openSymbol(s.symbol)}>
             <span className="symbolChip">{s.symbol.slice(0,1)}</span>
@@ -94,9 +104,7 @@ export function AppShell({children,rightRail}:{children:React.ReactNode;rightRai
             <span>{activeClass?(activeClass.period||activeClass.code):(classes.length?classes.length+" classes":"Join or create")}</span>
           </div>
         </Link>}
-        <div className="sidebarBottom">
-          <button className="sideLink"><Settings size={18}/><span>Settings</span></button>
-        </div>
+        <div className="sidebarBottom"/>
       </aside>
       <main className="appContent">{children}</main>
       {rightRail&&<aside className="rightRail">{rightRail}</aside>}
