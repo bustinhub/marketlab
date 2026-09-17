@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { AlertCircle, Check, ChevronDown } from "lucide-react";
+import { AlertCircle, Check } from "lucide-react";
 import { useTrading } from "./TradingProvider";
 import { useAuth } from "./AuthProvider";
 import { useClassroom } from "./ClassroomProvider";
@@ -49,7 +49,7 @@ export function TradeTicket({symbol}:{symbol:string}){
       <button className={side==="BUY"?"buy active":""} onClick={()=>{setSide("BUY");setReview(false)}}>Buy</button>
       <button className={side==="SELL"?"sell active":""} onClick={()=>{setSide("SELL");setReview(false)}}>Sell</button>
     </div>
-    <div className="orderField"><label>Order type</label><button className="fieldButton">Market <ChevronDown size={14}/></button></div>
+    <div className="orderField"><label>Order type</label><span className="fieldButton static">Market</span></div>
     <div className="orderField"><label>Amount in</label><div className="segmented"><button className={mode==="shares"?"active":""} onClick={()=>{setMode("shares");setAmount("1");setReview(false)}}>Shares</button><button className={mode==="dollars"?"active":""} onClick={()=>{setMode("dollars");setAmount("100");setReview(false)}}>Dollars</button></div></div>
     <div className="amountField"><label>{mode==="shares"?"Shares":"Dollars"}</label><div><span>{mode==="dollars"?"$":""}</span><input inputMode="decimal" value={amount} onChange={e=>{setAmount(e.target.value);setReview(false)}}/></div></div>
     <div className="ticketRows">
