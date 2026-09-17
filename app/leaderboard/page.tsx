@@ -1,50 +1,60 @@
 "use client";
 
-import { Crown, Medal, Trophy, Users } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Trophy } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { useTrading } from "@/components/TradingProvider";
-import { CLASSMATES, money, pct } from "@/lib/market";
+import { useAuth } from "@/components/AuthProvider";
+import { useClassroom } from "@/components/ClassroomProvider";
+
+type Row={user_id:string;display_name:string;portfolio_value:number;return_percent:number;holdings_count:number};
+function money(n:number){return n.toLocaleString("en-US",{style:"currency",currency:"USD"})}
+function pct(n:number){return (n>=0?"+":"")+n.toFixed(2)+"%"}
 
 export default function LeaderboardPage(){
-  const {equity,totalReturn,trades}=useTrading();
-  const rows=[...CLASSMATES,{name:"You",value:equity,returnPct:totalReturn,today:totalReturn/5,trades:trades.length,badge:"AY"}].sort((a,b)=>b.value-a.value);
-  const top=rows.slice(0,3);
+  const {user,token}=useAuth();
+  const {activeClass}=useClassroom();
+  const [rows,setRows]=useState<Row[]>([]);
+  const [loading,setLoading]=useState(false);
+  const [error,setError]=useState("");
 
-  return <AppShell>
-    <div className="pageContainer">
-      <div className="pageHero leaderboardHero">
-        <div><small>CLASS COMPETITION</small><h1>Leaderboard</h1><p>Learn by building a portfolio — without risking real money.</p></div>
-        <div className="competitionMeta"><span><Users size={15}/> 24 students</span><b>23 days remaining</b></div>
-      </div>
+  useEffect(()=>{
+    if(!user||!activeClass){setRows([]);return}
+    let cancelled=false;
+    async function load(){
+      const access=token();if(!access)return;
+      setLoading(true);
+      try{
+        const res=await fetch("/api/leaderboard?classId="+encodeURIComponent(activeClass.id),{headers:{Authorization:"Bearer "+access},cache:"no-store"});
+        const data=await res.json();
+        if(cancelled)return;
+        if(!res.ok)throw new Error(data.error||"Leaderboard unavailable.");
+        setRows(data.rows||[]);setError("");
+      }catch(e:any){if(!cancelled)setError(e?.message||"Leaderboard unavailable.")}
+      finally{if(!cancelled)setLoading(false)}
+    }
+    void load();
+    const id=setInterval(load,30000);
+    return()=>{cancelled=true;clearInterval(id)};
+  },[user?.id,activeClass?.id]);
 
-      <div className="podiumGrid">
-        {top.map((r,i)=><article key={r.name} className={"podiumCard place"+(i+1)}>
-          <div className="podiumRank">{i===0?<Crown size={22}/>:<Medal size={22}/>}<span>#{i+1}</span></div>
-          <div className="podiumAvatar">{r.badge}</div>
-          <h2>{r.name}</h2><strong>{money(r.value)}</strong><span className={r.returnPct>=0?"up":"down"}>{pct(r.returnPct)}</span>
-        </article>)}
-      </div>
-
-      <section className="premiumCard classStats">
-        <div><Trophy size={18}/><span>Class leader</span><b>{rows[0].name}</b></div>
-        <div><span>Average portfolio</span><b>{money(rows.reduce((s,r)=>s+r.value,0)/rows.length)}</b></div>
-        <div><span>Total paper trades</span><b>{rows.reduce((s,r)=>s+r.trades,0)}</b></div>
-        <div><span>Starting balance</span><b>$100,000</b></div>
-      </section>
-
+  return <AppShell><div className="pageContainer">
+    {!user?<div className="emptyPanel"><b>Sign in to view your class leaderboard.</b><Link className="primaryButton" href="/login">Sign in</Link></div>
+    :!activeClass?<div className="emptyPanel"><b>Select a class.</b><Link className="primaryButton" href="/classes">Classes</Link></div>
+    :<>
+      <div className="pageHero"><div><small>LEADERBOARD</small><h1>{activeClass.name}</h1><p>{activeClass.period||activeClass.code}</p></div></div>
+      {error&&<div className="formError wide">{error}</div>}
       <section className="premiumCard dataTableCard">
-        <div className="sectionHeading leaderboardHeading"><div><small>STANDINGS</small><h2>Personal Finance · Period 3</h2></div><div className="filterPills"><button className="active">Overall</button><button>Today</button><button>This week</button></div></div>
-        <div className="leaderRows">
-          {rows.map((r,i)=><div key={r.name} className={r.name==="You"?"leaderboardRow you":"leaderboardRow"}>
-            <div className="rankNumber">{i+1}</div>
-            <div className="leaderPerson"><div className="leaderAvatar">{r.badge}</div><div><b>{r.name}</b><small>{r.name==="You"?"Your account":"Student"}</small></div></div>
-            <div><span>Portfolio</span><b>{money(r.value)}</b></div>
-            <div><span>Today</span><b className={r.today>=0?"up":"down"}>{pct(r.today)}</b></div>
-            <div><span>Total return</span><b className={r.returnPct>=0?"up":"down"}>{pct(r.returnPct)}</b></div>
-            <div><span>Trades</span><b>{r.trades}</b></div>
-          </div>)}
-        </div>
+        <div className="sectionHeading"><div><small>STANDINGS</small><h2>{loading?"Updating…":rows.length+" students"}</h2></div></div>
+        {!loading&&!rows.length?<div className="emptyPanel compact"><Trophy size={22}/><b>No student portfolios yet.</b></div>
+        :<div className="leaderRows">{rows.map((r,i)=><div key={r.user_id} className={r.user_id===user.id?"leaderboardRow you":"leaderboardRow"}>
+          <div className="rankNumber">{i+1}</div>
+          <div className="leaderPerson"><div className="leaderAvatar">{r.display_name.split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase()}</div><div><b>{r.display_name}</b><small>{r.user_id===user.id?"You":"Student"}</small></div></div>
+          <div><span>Portfolio</span><b>{money(r.portfolio_value)}</b></div>
+          <div><span>Return</span><b className={r.return_percent>=0?"up":"down"}>{pct(r.return_percent)}</b></div>
+          <div><span>Positions</span><b>{r.holdings_count}</b></div>
+        </div>)}</div>}
       </section>
-    </div>
-  </AppShell>;
+    </>}
+  </div></AppShell>;
 }
