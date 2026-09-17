@@ -16,7 +16,7 @@
   --amber:#eab76b;
   --radius:12px;
   --mono:"SFMono-Regular","Cascadia Code","Roboto Mono",Consolas,monospace;
-  --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 }
 *{box-sizing:border-box}
 html{background:var(--bg);scroll-behavior:smooth}
@@ -250,4 +250,118 @@ a{text-decoration:none}
   .shellGrid,.shellGrid.withRail{display:block;height:auto}.sidebar{position:fixed;left:0;right:0;bottom:0;height:56px;z-index:50;border-right:0;border-top:1px solid var(--border);padding:4px 6px;flex-direction:row;background:#080c11}.navGroup{width:100%;display:grid;grid-template-columns:repeat(5,1fr)}.navLabel,.classSummary,.sidebarBottom{display:none}.sideLink{height:46px;flex-direction:column;gap:2px;font-size:7px}.sideLink span{display:block}.sideLink.active{box-shadow:inset 0 -2px #6ea8fe}
   .appContent{overflow:visible;padding-bottom:65px}.marketStrip{overflow:auto}.instrumentHeader{padding:15px}.symbolLine span{display:none}.instrumentActions{grid-row:1}.quoteBlock{grid-column:1/3}.marketChart{height:390px}.chartControlBar{overflow:auto}.rangeTabs button{min-width:30px}.statRibbon{grid-template-columns:repeat(2,1fr)}.statRibbon>div{border-bottom:1px solid var(--border)!important}.detailGrid,.financialGrid{grid-template-columns:1fr}.overviewFacts{grid-template-columns:repeat(2,1fr)}
   .pageContainer{padding:18px 12px 72px}.pageHero{gap:12px}.pageHero h1{font-size:27px}.heroBadge,.competitionMeta{display:none}.summaryGrid.four{grid-template-columns:1fr 1fr}.portfolioLayout{grid-template-columns:1fr}.activityRow{grid-template-columns:50px 1fr 90px}.activityRow>span:nth-child(4),.activityRow>strong{display:none}.podiumGrid{grid-template-columns:1fr}.classStats{grid-template-columns:repeat(2,1fr)}.classStats>div:nth-child(2){border-right:0}.leaderboardHeading{align-items:flex-start;gap:10px;flex-direction:column}.leaderboardRow{grid-template-columns:30px 1fr 95px}.leaderboardRow>div:nth-child(4),.leaderboardRow>div:nth-child(5),.leaderboardRow>div:nth-child(6){display:none}.teacherStudent{grid-template-columns:36px 1fr 100px}.teacherStudent>div:nth-child(4),.teacherStudent>div:nth-child(5),.teacherStudent>button{display:none}.lessonGrid{grid-template-columns:1fr}.glossaryGrid{grid-template-columns:1fr}.learnHero h1{font-size:30px}
+}
+
+
+/* v3 classroom + TradingView-like cleanup */
+body{font-family:var(--sans);letter-spacing:0}
+.appTopbar,.sidebar,.rightRail,.instrumentHeader,.terminalCard,.statRibbon{background:#0b0b0c}
+.appContent{background:#0b0b0c}
+.shellGrid.withRail{grid-template-columns:190px minmax(0,1fr) 320px}
+.sideLink{border-radius:4px}
+.sideLink.active{background:#1d1d1f;box-shadow:inset 2px 0 #2962ff}
+.globalSearch{background:#1a1a1c;border-color:#2a2a2d;border-radius:18px}
+.globalSearch:focus-within{border-color:#515158}
+.globalSearchMenu{background:#141416;border-color:#313136}
+.searchStatus{position:absolute;top:42px;left:0;right:0;padding:10px 12px;background:#141416;border:1px solid #313136;border-radius:8px;color:#8e8e93;font-size:11px}
+.feedBadge.live{color:#26a69a}.feedBadge.live i{background:#26a69a}
+.accountMenu{display:flex;align-items:center;gap:7px}
+.signOutLink{border:0;background:transparent;color:#7f7f86;font-size:10px;padding:6px}
+.signOutLink:hover{color:#fff}
+.topSignIn{display:flex;align-items:center;gap:6px;color:#d5d5d7;font-size:11px}
+.instrumentHeader.clean{background:#0b0b0c;padding:15px 18px}
+.companyMark{border:1px solid #343438;background:#151517;border-radius:50%;font-family:var(--sans)}
+.symbolLine h1{font-family:var(--sans);font-size:24px;font-weight:700}
+.quoteBlock strong{font-family:var(--sans);font-weight:600}
+.marketError{grid-column:1/3;background:#2a1517;border:1px solid #52272b;color:#f28b8e;padding:7px 9px;border-radius:4px;font-size:10px;max-width:max-content}
+.chartStage{position:relative}
+.chartOverlay{position:absolute;inset:0;display:grid;place-items:center;background:rgba(11,11,12,.72);color:#9c9ca2;font-size:12px;z-index:3}
+.chartOverlay.error{color:#f28b8e}
+.marketChart{background:#0b0b0c}
+.chartControlBar{background:#0b0b0c;border-color:#242426}
+.rangeTabs button,.chartTools button{border-radius:4px}
+.rangeTabs button.active,.chartTools button.active{background:#2a2a2d;border-color:#39393e;color:#fff}
+.compactStats{background:#0b0b0c}
+.compactStats>div{padding:10px 12px}
+.railSection,.tradeTicket{background:#0b0b0c}
+.watchRow:hover,.watchRow.active{background:#1c1c1f}
+.watchRow.active{box-shadow:inset 2px 0 #2962ff}
+.watchRow>div>span small{max-width:95px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ticketGate{display:flex;flex-direction:column;gap:7px}
+.ticketGate span{font-size:9px;color:#77777f}
+.ticketGate a{color:#4c8bf5;font-size:10px;font-weight:600}
+.fullAllocation{margin:12px 0;padding:16px}
+.emptyPanel{min-height:220px;border:1px solid #2a2a2d;background:#111113;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:#8c8c92;text-align:center;padding:24px}
+.emptyPanel b{color:#e1e1e4;font-size:13px}
+.emptyPanel span{font-size:10px}
+.emptyPanel.compact{min-height:140px}
+.formError,.formSuccess,.setupNotice{padding:9px 10px;border-radius:5px;font-size:10px;margin:8px 0}
+.formError{background:#2b1518;border:1px solid #54272d;color:#ef9a9a}
+.formSuccess{background:#12241f;border:1px solid #245044;color:#80cbc4}
+.setupNotice{background:#242015;border:1px solid #4c4325;color:#d5be72}
+.formError.wide{margin:0 0 12px}
+
+/* Auth */
+.authPage{min-height:100vh;background:#0b0b0c}
+.authTop{height:64px;border-bottom:1px solid #242426;display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.authTop>a{font-size:11px;color:#8b8b91}
+.authCard{width:min(420px,calc(100% - 32px));margin:70px auto;padding:24px;border:1px solid #2a2a2d;border-radius:8px;background:#111113}
+.authCard h1{margin:0 0 18px;font-size:24px}
+.authTabs{display:grid;grid-template-columns:1fr 1fr;background:#0b0b0c;border:1px solid #28282b;padding:3px;border-radius:6px;margin-bottom:18px}
+.authTabs button{height:32px;border:0;background:transparent;color:#85858c;border-radius:4px}
+.authTabs button.active{background:#252528;color:#fff}
+.authCard form{display:flex;flex-direction:column;gap:12px}
+.authCard label,.classForm label{display:flex;flex-direction:column;gap:6px;font-size:10px;color:#9b9ba1}
+.authCard input,.authCard select,.classForm input{height:38px;border:1px solid #303034;border-radius:5px;background:#0b0b0c;color:#f2f2f3;padding:0 10px;outline:0}
+.authCard input:focus,.authCard select:focus,.classForm input:focus{border-color:#4b6fa8}
+.authSubmit{width:100%;margin-top:4px}
+
+/* Classes */
+.classesPage{max-width:1050px}
+.classActionGrid{display:grid;grid-template-columns:1fr 1.35fr;gap:12px;margin-bottom:14px}
+.classForm{padding:18px}
+.classForm h2{margin:0 0 15px;font-size:15px}
+.classForm .primaryButton{margin-top:14px}
+.twoFields{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.classList{padding:16px}
+.classRow{width:100%;display:grid;grid-template-columns:36px 1fr 120px 70px;align-items:center;gap:10px;border:0;border-top:1px solid #242426;background:transparent;color:#e3e3e5;padding:11px 6px;text-align:left}
+.classRow:hover,.classRow.active{background:#18181a}
+.classRow.active{box-shadow:inset 2px 0 #2962ff}
+.classRowIcon{width:30px;height:30px;border:1px solid #303034;border-radius:5px;display:grid;place-items:center;color:#9c9ca3}
+.classRow>div:nth-child(2){display:flex;flex-direction:column}
+.classRow>div:nth-child(2) b{font-size:11px}.classRow>div:nth-child(2) span{font-size:9px;color:#77777e}
+.classCode{display:flex;align-items:center;gap:6px}
+.classCode span{font-size:8px;color:#77777f}.classCode b{font-family:var(--mono);font-size:10px}.classCode svg{color:#77777f}
+.classRow>em{font-style:normal;font-size:8px;color:#77777f;text-align:right}
+.classCodeLarge{min-width:165px;display:grid;grid-template-columns:1fr auto;gap:1px 10px;align-items:center;text-align:left;border:1px solid #303034;background:#131315;border-radius:6px;padding:9px 11px}
+.classCodeLarge span{font-size:8px;color:#77777f}.classCodeLarge b{font-family:var(--mono);font-size:15px}.classCodeLarge svg{grid-column:2;grid-row:1/3}.classCodeLarge em{grid-column:1/3;font-size:8px;color:#26a69a;font-style:normal}
+
+/* Teacher */
+.teacherSettings{padding:17px;margin-bottom:12px}
+.dangerLine{margin-top:8px;border-top:1px solid #332226}
+.removeMember{justify-self:end;width:31px;height:31px;border:1px solid #343438;background:transparent;color:#8d8d93;border-radius:4px;display:grid;place-items:center}
+.removeMember:hover{color:#ef5350;border-color:#5a2b2b}
+.teacherStudent{grid-template-columns:38px 1fr 110px 40px}
+
+/* Landing v3 */
+.simpleLanding{min-height:100vh;background:#0b0b0c}
+.simpleHero{max-width:1180px;margin:0 auto;padding:90px 24px 75px;display:grid;grid-template-columns:.8fr 1.2fr;gap:70px;align-items:center}
+.simpleHeroCopy .eyebrow{display:block;margin:0 0 16px;color:#787880}
+.simpleHeroCopy h1{font-size:62px;letter-spacing:-.055em;margin:0}
+.simpleHeroCopy p{font-size:17px;color:#98989f;margin:12px 0 26px}
+.simpleTerminal{border:1px solid #2a2a2d;border-radius:7px;background:#0b0b0c;overflow:hidden}
+.simpleTerminalHead{height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 17px;border-bottom:1px solid #232326}
+.simpleTerminalHead>div{display:flex;align-items:baseline;gap:10px}.simpleTerminalHead b{font-size:20px}.simpleTerminalHead span,.simpleTerminalHead small{color:#85858b;font-size:10px}
+.simpleChartGrid{height:310px;position:relative;background-image:linear-gradient(#171719 1px,transparent 1px),linear-gradient(90deg,#171719 1px,transparent 1px);background-size:100% 62px,90px 100%}
+.simpleChartGrid svg{position:absolute;inset:18px;width:calc(100% - 36px);height:calc(100% - 36px)}
+.simpleTerminalFoot{height:42px;display:flex;align-items:center;gap:22px;padding:0 16px;border-top:1px solid #232326;color:#77777e;font-size:9px}
+.simpleFeatures{max-width:1180px;margin:0 auto;padding:0 24px 90px;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#2a2a2d;border:1px solid #2a2a2d}
+.simpleFeatures article{background:#101012;padding:20px;display:flex;flex-direction:column;gap:8px}
+.simpleFeatures svg{color:#9b9ba1}.simpleFeatures b{font-size:12px}.simpleFeatures span{font-size:10px;color:#77777f;line-height:1.5}
+
+@media(max-width:900px){
+  .simpleHero{grid-template-columns:1fr}.simpleFeatures{grid-template-columns:1fr 1fr}.classActionGrid{grid-template-columns:1fr}
+}
+@media(max-width:680px){
+  .shellGrid.withRail{display:block}.simpleHero{padding:55px 16px}.simpleHeroCopy h1{font-size:44px}.simpleFeatures{grid-template-columns:1fr;padding-left:16px;padding-right:16px}.classRow{grid-template-columns:34px 1fr 90px}.classRow>em{display:none}.twoFields{grid-template-columns:1fr}
 }
