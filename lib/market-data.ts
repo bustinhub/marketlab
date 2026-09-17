@@ -5,6 +5,8 @@ type TwelveQuote={
 
 function key(){return process.env.TWELVE_DATA_API_KEY||""}
 
+const quoteCache=new Map<string,{expires:number,data:any}>();
+
 async function td(path:string,params:Record<string,string|number|undefined>){
   const apiKey=key();
   if(!apiKey)throw new Error("MARKET_DATA_NOT_CONFIGURED");
@@ -35,11 +37,14 @@ export async function searchSymbols(query:string){
 }
 
 export async function getQuote(symbol:string){
-  const q:TwelveQuote=await td("/quote",{symbol});
+  const clean=symbol.toUpperCase();
+  const cached=quoteCache.get(clean);
+  if(cached&&cached.expires>Date.now())return cached.data;
+  const q:TwelveQuote=await td("/quote",{symbol:clean});
   const close=Number(q.close||0);
   if(!close)throw new Error("Quote unavailable.");
-  return {
-    symbol:String(q.symbol||symbol).toUpperCase(),
+  const result={
+    symbol:String(q.symbol||clean).toUpperCase(),
     name:String(q.name||q.symbol||symbol),
     exchange:String(q.exchange||""),
     currency:String(q.currency||"USD"),
@@ -55,6 +60,8 @@ export async function getQuote(symbol:string){
     timestamp:Number(q.timestamp||0),
     isMarketOpen:Boolean((q as any).is_market_open),
   };
+  quoteCache.set(clean,{expires:Date.now()+2500,data:result});
+  return result;
 }
 
 export async function getQuotes(symbols:string[]){
