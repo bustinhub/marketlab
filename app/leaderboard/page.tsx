@@ -20,12 +20,13 @@ export default function LeaderboardPage(){
 
   useEffect(()=>{
     if(!user||!activeClass){setRows([]);return}
+    const classId=activeClass.id;
     let cancelled=false;
     async function load(){
       const access=token();if(!access)return;
       setLoading(true);
       try{
-        const res=await fetch("/api/leaderboard?classId="+encodeURIComponent(activeClass.id),{headers:{Authorization:"Bearer "+access},cache:"no-store"});
+        const res=await fetch("/api/leaderboard?classId="+encodeURIComponent(classId),{headers:{Authorization:"Bearer "+access},cache:"no-store"});
         const data=await res.json();
         if(cancelled)return;
         if(!res.ok)throw new Error(data.error||"Leaderboard unavailable.");
