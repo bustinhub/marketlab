@@ -26,6 +26,9 @@ export async function POST(request:NextRequest){
     return NextResponse.json({error:error?.message==="MARKET_DATA_NOT_CONFIGURED"?"Live market data is not configured.":(error?.message||"Could not verify market price.")},{status:503});
   }
 
+  if(classroom.market_hours_only&&quote.isMarketOpen===false)
+    return NextResponse.json({error:"The U.S. market is closed. This class trades during market hours only."},{status:403});
+
   const {data,error}=await auth.admin!.rpc("execute_paper_trade",{
     p_user_id:auth.user!.id,p_class_id:classId,p_symbol:symbol,p_side:side,p_shares:shares,p_price:quote.price
   });
