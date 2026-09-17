@@ -30,6 +30,8 @@ function buildSeries(symbol:string,price:number,count=110){
 
 export function MarketChart({symbol,price}:{symbol:string;price:number}){
   const host=useRef<HTMLDivElement|null>(null);
+  const priceSeries=useRef<any>(null);
+  const lastBar=useRef<{time:UTCTimestamp;open:number;high:number;low:number;close:number}|null>(null);
   const [style,setStyle]=useState<"candles"|"area">("candles");
   const [range,setRange]=useState("1D");
   const [expanded,setExpanded]=useState(false);
@@ -48,22 +50,38 @@ export function MarketChart({symbol,price}:{symbol:string;price:number}){
       crosshair:{mode:CrosshairMode.Normal,vertLine:{color:"#46566a",width:1,labelBackgroundColor:"#253244"},horzLine:{color:"#46566a",width:1,labelBackgroundColor:"#253244"}},
       handleScale:true,handleScroll:true,
     });
+    const latest=base[base.length-1];
+    lastBar.current={time:latest.time,open:latest.open,high:latest.high,low:latest.low,close:latest.close};
+
     if(style==="candles"){
       const series=chart.addSeries(CandlestickSeries,{upColor:"#2bd3a3",downColor:"#f25f70",borderVisible:false,wickUpColor:"#2bd3a3",wickDownColor:"#f25f70"});
       series.setData(base.map(({time,open,high,low,close})=>({time,open,high,low,close})));
-      const last=base[base.length-1];
-      series.update({time:last.time,open:last.open,close:price,high:Math.max(last.high,price),low:Math.min(last.low,price)});
+      priceSeries.current=series;
     }else{
       const series=chart.addSeries(AreaSeries,{lineColor:"#72a8ff",topColor:"rgba(114,168,255,.24)",bottomColor:"rgba(114,168,255,0)",lineWidth:2});
       series.setData(base.map(r=>({time:r.time,value:r.close})));
-      series.update({time:base[base.length-1].time,value:price});
+      priceSeries.current=series;
     }
     const volume=chart.addSeries(HistogramSeries,{priceScaleId:"vol",priceFormat:{type:"volume"}});
     volume.priceScale().applyOptions({scaleMargins:{top:.82,bottom:0}});
     volume.setData(base.map(r=>({time:r.time,value:r.volume,color:r.close>=r.open?"rgba(43,211,163,.22)":"rgba(242,95,112,.22)"})));
     chart.timeScale().fitContent();
-    return()=>chart.remove();
-  },[symbol,price,style,range,expanded,base]);
+    return()=>{priceSeries.current=null;chart.remove()};
+  },[symbol,style,range,expanded,base]);
+
+  useEffect(()=>{
+    const series=priceSeries.current;
+    const last=lastBar.current;
+    if(!series||!last)return;
+    if(style==="candles"){
+      const next={time:last.time,open:last.open,high:Math.max(last.high,price),low:Math.min(last.low,price),close:price};
+      lastBar.current=next;
+      series.update(next);
+    }else{
+      series.update({time:last.time,value:price});
+      lastBar.current={...last,close:price,high:Math.max(last.high,price),low:Math.min(last.low,price)};
+    }
+  },[price,style]);
 
   return <div className={expanded?"marketChartWrap expanded":"marketChartWrap"}>
     <div className="chartControlBar">
