@@ -1,99 +1,83 @@
-# MarketLab V1 — Vercel Edition
+# MarketLab
 
-A classroom paper-trading simulator with a dark TradingView-inspired interface, candlestick charts, demo/live market data support, paper buy/sell orders, saved local portfolios, watchlists, leaderboard UI, and optional Supabase class sync.
+Classroom paper trading built with Next.js, Supabase, TradingView Lightweight Charts, and Twelve Data.
 
-## Important: repository structure
+## What works
 
-The **contents of this folder must be at the root of your GitHub repository**.
+- Email/password student and teacher accounts
+- Teacher class creation
+- Shareable class codes
+- Student class enrollment
+- Saved classroom portfolios
+- Server-verified paper trades
+- Fractional-share controls
+- Teacher trading pause/resume
+- Teacher roster management
+- Class portfolio resets
+- Live class leaderboard
+- Account-synced watchlists
+- U.S. stock and ETF search
+- Live quotes
+- Real historical candlestick charts
+- Portfolio holdings and trade history
 
-Your GitHub repo should open to this structure immediately:
+No sample students or fabricated leaderboard entries are used.
 
-```text
-app/
-components/
-lib/
-.env.example
-.gitignore
-.nvmrc
-next-env.d.ts
-next.config.mjs
-package.json
-supabase-schema.sql
-tsconfig.json
-vercel.json
-README.md
+## Required services
+
+### 1. Supabase
+
+Create a Supabase project and run the complete contents of:
+
+`supabase-schema.sql`
+
+in the Supabase SQL Editor.
+
+Then add these environment variables to Vercel:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_URL=
+SUPABASE_SERVICE_ROLE_KEY=
 ```
 
-There should **not** be another `marketlab-v1-vercel` folder above `app/`.
+The service-role key is server-only. Never expose it as a `NEXT_PUBLIC_` variable.
 
-## Fastest test deploy
+### 2. Twelve Data
 
-1. Create/open your GitHub repo.
-2. Put every file and folder from this package directly in the repo root.
-3. Commit/push to `main`.
-4. In Vercel, import that GitHub repository.
-5. Framework Preset: **Next.js**.
-6. Root Directory: leave it **blank / repository root**.
-7. Do not add environment variables yet.
-8. Deploy.
+Create a Twelve Data API key and add:
 
-The app will run in demo mode without any API keys.
-
-## Build configuration
-
-The project intentionally uses Webpack for the production build:
-
-```json
-"build": "next build --webpack"
+```
+TWELVE_DATA_API_KEY=
 ```
 
-Node is pinned to the Vercel-supported Node 22 major:
+MarketLab does not fall back to invented stock prices. If market data is not configured, the UI reports that live data is unavailable.
 
-```json
-"engines": {
-  "node": "22.x"
-}
+For a small development test, a low-limit plan may work. A real classroom with many concurrent students needs enough API capacity for quote/search/chart traffic and the appropriate market-data display/redistribution rights for your use case.
+
+## Local development
+
+```bash
+npm install
+npm run dev
 ```
 
-## Optional real market data
+## Vercel
 
-Add this Vercel environment variable later:
+Import this GitHub repository into Vercel. The app uses standard Next.js App Router routes, so no custom output directory is required.
 
-```text
-FINNHUB_API_KEY=your_key_here
-```
+After adding or changing environment variables in Vercel, redeploy the project.
 
-Without it, the site uses animated demo quotes and candles so the whole interface can be tested safely.
+## Security
 
-## Optional shared classroom leaderboard
+- Student cash and holdings are never trusted from the browser.
+- Trade execution happens server-side.
+- The server obtains the current market quote before executing an order.
+- Supabase service credentials stay server-side.
+- Supabase Row Level Security is enabled on the classroom tables.
+- Classroom mutations verify teacher/student membership server-side.
 
-Run `supabase-schema.sql` in your Supabase project, then add:
+## Data note
 
-```text
-SUPABASE_URL=...
-SUPABASE_SERVICE_ROLE_KEY=...
-```
-
-Keep the service-role key server-side only. Never put it in a `NEXT_PUBLIC_` variable.
-
-## Vercel WebSocket route
-
-The browser connects to:
-
-```text
-/api/ws
-```
-
-The route uses Vercel's WebSocket upgrade API and automatically falls back to demo streaming when no market-data key is configured.
-
-## If Vercel says it cannot find `app` or `pages`
-
-That means the repository root is wrong. Either:
-
-- move `app/`, `components/`, `lib/`, and `package.json` to the GitHub repo root, or
-- set the Vercel Project **Root Directory** to the folder that contains those files.
-
-This corrected ZIP is already flattened so the files are ready to become the repo root.
-
-
-<!-- deployment trigger: app directory verified on main -->
+MarketLab is a paper-trading simulator. It does not execute real securities transactions or provide brokerage services.
