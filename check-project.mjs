@@ -1,21 +1,27 @@
 import { existsSync, readdirSync } from "node:fs";
 
-console.log("MarketLab prebuild verification");
-console.log("cwd:", process.cwd());
-console.log("root files:", readdirSync(".").sort().join(", "));
+const required=[
+  "app/page.tsx",
+  "app/layout.tsx",
+  "app/trade/page.tsx",
+  "app/login/page.tsx",
+  "app/classes/page.tsx",
+  "components/TradingProvider.tsx",
+  "components/AuthProvider.tsx",
+  "components/ClassroomProvider.tsx",
+  "components/MarketChart.tsx",
+  "lib/market-data.ts",
+  "package.json",
+];
 
-if (existsSync("app")) {
-  console.log("app files:", readdirSync("app").sort().join(", "));
-} else {
-  console.error("ERROR: app directory is missing from the Vercel checkout.");
+console.log("MarketLab prebuild verification");
+console.log("cwd:",process.cwd());
+console.log("root files:",readdirSync(".").sort().join(", "));
+
+const missing=required.filter(file=>!existsSync(file));
+if(missing.length){
+  console.error("Missing required files:");
+  for(const file of missing)console.error("-",file);
   process.exit(1);
 }
-
-for (const file of ["app/page.tsx", "app/layout.tsx", "app/globals.css"]) {
-  if (!existsSync(file)) {
-    console.error("ERROR: missing required file:", file);
-    process.exit(1);
-  }
-}
-
-console.log("MarketLab app directory verified.");
+console.log("MarketLab project structure verified.");
