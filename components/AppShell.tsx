@@ -2,74 +2,99 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BarChart3, BookOpen, GraduationCap, LayoutDashboard, Search, Settings, Trophy, Users, WalletCards } from "lucide-react";
-import { useMemo, useState } from "react";
+import { BarChart3, BookOpen, GraduationCap, LogIn, Search, Settings, Trophy, Users, WalletCards } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { BrandLogo } from "./BrandLogo";
 import { useTrading } from "./TradingProvider";
-import { MARKET_SYMBOLS } from "@/lib/market";
+import { useAuth } from "./AuthProvider";
+import { useClassroom } from "./ClassroomProvider";
 
-const nav=[
-  {href:"/trade",label:"Markets",icon:BarChart3},
-  {href:"/portfolio",label:"Portfolio",icon:WalletCards},
-  {href:"/leaderboard",label:"Leaderboard",icon:Trophy},
-  {href:"/learn",label:"Learn",icon:BookOpen},
-  {href:"/teacher",label:"Teacher",icon:GraduationCap},
-];
+type SearchResult={symbol:string;name:string;exchange:string;type:string};
 
 export function AppShell({children,rightRail}:{children:React.ReactNode;rightRail?:React.ReactNode}){
   const pathname=usePathname();
   const router=useRouter();
-  const {feedMode,equity}=useTrading();
+  const {feedMode,equity,setSelected}=useTrading();
+  const {user,profile,signOut}=useAuth();
+  const {activeClass,classes}=useClassroom();
   const [query,setQuery]=useState("");
-  const results=useMemo(()=>{
-    const q=query.trim().toLowerCase();
-    if(!q) return [];
-    return MARKET_SYMBOLS.filter(s=>s.symbol.toLowerCase().includes(q)||s.name.toLowerCase().includes(q)).slice(0,6);
+  const [results,setResults]=useState<SearchResult[]>([]);
+  const [searching,setSearching]=useState(false);
+
+  useEffect(()=>{
+    const q=query.trim();
+    if(!q){setResults([]);setSearching(false);return}
+    setSearching(true);
+    const id=setTimeout(async()=>{
+      try{
+        const res=await fetch("/api/market/search?q="+encodeURIComponent(q),{cache:"no-store"});
+        const data=await res.json();
+        setResults(res.ok&&Array.isArray(data.results)?data.results.slice(0,10):[]);
+      }catch{setResults([])}
+      finally{setSearching(false)}
+    },250);
+    return()=>clearTimeout(id);
   },[query]);
 
   function openSymbol(symbol:string){
-    setQuery("");
-    router.push(`/trade?symbol=${symbol}`);
+    setQuery("");setResults([]);setSelected(symbol);router.push("/trade?symbol="+encodeURIComponent(symbol));
   }
+
+  const initials=useMemo(()=>{
+    const name=profile?.display_name||user?.email||"";
+    return name.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase()||"U";
+  },[profile?.display_name,user?.email]);
+
+  const nav=[
+    {href:"/trade",label:"Markets",icon:BarChart3},
+    {href:"/portfolio",label:"Portfolio",icon:WalletCards},
+    {href:"/leaderboard",label:"Leaderboard",icon:Trophy},
+    {href:"/classes",label:"Classes",icon:Users},
+    {href:"/learn",label:"Learn",icon:BookOpen},
+    ...(profile?.role==="teacher"?[{href:"/teacher",label:"Teacher",icon:GraduationCap}]:[]),
+  ];
 
   return <div className="appFrame">
     <header className="appTopbar">
       <BrandLogo/>
       <div className="globalSearch">
         <Search size={16}/>
-        <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search a company or symbol"/>
-        <kbd>⌘ K</kbd>
-        {results.length>0&&<div className="globalSearchMenu">
-          {results.map(s=><button key={s.symbol} onClick={()=>openSymbol(s.symbol)}>
+        <input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search all U.S. stocks and ETFs"/>
+        <kbd>/</kbd>
+        {(query&&results.length>0)&&<div className="globalSearchMenu">
+          {results.map(s=><button key={s.exchange+":"+s.symbol} onClick={()=>openSymbol(s.symbol)}>
             <span className="symbolChip">{s.symbol.slice(0,1)}</span>
             <span><b>{s.symbol}</b><small>{s.name}</small></span>
             <em>{s.exchange}</em>
           </button>)}
         </div>}
+        {query&&searching&&<div className="searchStatus">Searching…</div>}
       </div>
       <div className="topbarMeta">
-        <div className={feedMode==="live"?"feedBadge live":"feedBadge"}><i/>{feedMode==="live"?"LIVE DATA":"DEMO FEED"}</div>
-        <div className="topEquity"><span>Portfolio</span><strong>${equity.toLocaleString("en-US",{maximumFractionDigits:0})}</strong></div>
-        <button className="userAvatar">AY</button>
+        <div className={feedMode==="live"?"feedBadge live":"feedBadge"}><i/>{feedMode==="live"?"LIVE":"DATA OFFLINE"}</div>
+        {user&&activeClass?.member_role==="student"&&<div className="topEquity"><span>Portfolio</span><strong>{"$"}{equity.toLocaleString("en-US",{maximumFractionDigits:0})}</strong></div>}
+        {user?<div className="accountMenu"><button className="userAvatar" title={profile?.display_name||user.email||""}>{initials}</button><button className="signOutLink" onClick={()=>void signOut()}>Sign out</button></div>:<Link className="topSignIn" href="/login"><LogIn size={14}/> Sign in</Link>}
       </div>
     </header>
 
     <div className={rightRail?"shellGrid withRail":"shellGrid"}>
       <aside className="sidebar">
         <div className="navGroup">
-          <span className="navLabel">WORKSPACE</span>
           {nav.map(item=>{
             const Icon=item.icon;
             const active=pathname===item.href;
             return <Link key={item.href} href={item.href} className={active?"sideLink active":"sideLink"}><Icon size={18}/><span>{item.label}</span></Link>
           })}
         </div>
-        <div className="classSummary">
-          <div className="classIcon"><Users size={17}/></div>
-          <div><small>PERSONAL FINANCE</small><strong>Period 3</strong><span>PF3-2026 · 24 students</span></div>
-        </div>
+        {user&&<Link href="/classes" className="classSummary">
+          <div className="classIcon"><Users size={16}/></div>
+          <div>
+            <small>{activeClass?"ACTIVE CLASS":"CLASSROOM"}</small>
+            <strong>{activeClass?.name||"Choose a class"}</strong>
+            <span>{activeClass?(activeClass.period||activeClass.code):(classes.length?classes.length+" classes":"Join or create")}</span>
+          </div>
+        </Link>}
         <div className="sidebarBottom">
-          <Link href="/teacher" className="sideLink"><LayoutDashboard size={18}/><span>Classroom</span></Link>
           <button className="sideLink"><Settings size={18}/><span>Settings</span></button>
         </div>
       </aside>
