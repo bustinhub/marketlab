@@ -84,7 +84,7 @@ export function TradingProvider({ children }:{children:React.ReactNode}) {
       }catch{}
     }
     sync();
-    const id=setInterval(sync,10000);
+    const id=setInterval(sync,15000);
     return ()=>{cancelled=true;clearInterval(id)};
   },[]);
 
