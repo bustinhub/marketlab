@@ -12,6 +12,7 @@ export type Classroom={
   trading_enabled:boolean;
   public_holdings:boolean;
   allow_fractional:boolean;
+  market_hours_only:boolean;
   teacher_id:string;
   member_role:"teacher"|"student";
   member_count:number;
