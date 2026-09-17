@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Copy, Lock, RotateCcw, Trash2, Users } from "lucide-react";
+import { Copy, Lock, RefreshCw, RotateCcw, Trash2, Users } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { useAuth } from "@/components/AuthProvider";
 import { useClassroom } from "@/components/ClassroomProvider";
@@ -48,6 +48,26 @@ export default function TeacherPage(){
     setBusy(false);
   }
 
+  async function regenerateCode(){
+    if(!activeClass||!confirm("Generate a new class code? The old code will stop working."))return;
+    const access=token();if(!access)return;
+    setBusy(true);setError("");
+    const res=await fetch("/api/classes/"+activeClass.id+"/code",{method:"POST",headers:{Authorization:"Bearer "+access}});
+    const data=await res.json();
+    if(!res.ok)setError(data.error||"Could not regenerate code.");else await refresh();
+    setBusy(false);
+  }
+
+  async function deleteClass(){
+    if(!activeClass||!confirm("Delete this class and all student portfolios? This cannot be undone."))return;
+    const access=token();if(!access)return;
+    setBusy(true);setError("");
+    const res=await fetch("/api/classes/"+activeClass.id,{method:"DELETE",headers:{Authorization:"Bearer "+access}});
+    const data=await res.json();
+    if(!res.ok){setError(data.error||"Could not delete class.");setBusy(false);return}
+    await refresh();setBusy(false);window.location.href="/classes";
+  }
+
   async function removeStudent(userId:string,name:string){
     if(!activeClass||!confirm("Remove "+name+" from this class?"))return;
     const access=token();if(!access)return;
@@ -64,7 +84,10 @@ export default function TeacherPage(){
   return <AppShell><div className="pageContainer">
     <div className="pageHero">
       <div><small>TEACHER</small><h1>{activeClass.name}</h1><p>{activeClass.period||"No period"}</p></div>
-      <button className="classCodeLarge" onClick={()=>{navigator.clipboard?.writeText(activeClass.code);setCopied(true);setTimeout(()=>setCopied(false),1200)}}><span>Class code</span><b>{activeClass.code}</b><Copy size={14}/>{copied&&<em>Copied</em>}</button>
+      <div className="classCodeActions">
+        <button className="classCodeLarge" onClick={()=>{navigator.clipboard?.writeText(activeClass.code);setCopied(true);setTimeout(()=>setCopied(false),1200)}}><span>Class code</span><b>{activeClass.code}</b><Copy size={14}/>{copied&&<em>Copied</em>}</button>
+        <button className="smallButton" disabled={busy} onClick={()=>void regenerateCode()}><RefreshCw size={13}/> New code</button>
+      </div>
     </div>
     {error&&<div className="formError wide">{error}</div>}
     <div className="summaryGrid four">
@@ -80,6 +103,7 @@ export default function TeacherPage(){
       <div className="settingRow"><div><b>Fractional shares</b><span>Students can buy less than one share.</span></div><button disabled={busy} className={activeClass.allow_fractional?"toggle on":"toggle"} onClick={()=>void patch({allow_fractional:!activeClass.allow_fractional})}><i/></button></div>
       <div className="settingRow"><div><b>Public holdings</b><span>Allow classmates to see each other's positions.</span></div><button disabled={busy} className={activeClass.public_holdings?"toggle on":"toggle"} onClick={()=>void patch({public_holdings:!activeClass.public_holdings})}><i/></button></div>
       <div className="teacherAction dangerLine"><div><b>Reset all portfolios</b><span>Deletes class trades and returns every student to the starting balance.</span></div><button disabled={busy} className="dangerButton" onClick={()=>void resetClass()}><RotateCcw size={14}/> Reset</button></div>
+      <div className="teacherAction dangerLine"><div><b>Delete class</b><span>Deletes the class, roster, portfolios, holdings, and trade history.</span></div><button disabled={busy} className="dangerButton" onClick={()=>void deleteClass()}><Trash2 size={14}/> Delete</button></div>
     </section>
 
     <section className="premiumCard dataTableCard">
