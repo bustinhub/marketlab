@@ -94,3 +94,6 @@ That means the repository root is wrong. Either:
 - set the Vercel Project **Root Directory** to the folder that contains those files.
 
 This corrected ZIP is already flattened so the files are ready to become the repo root.
+
+
+<!-- deployment trigger: app directory verified on main -->
