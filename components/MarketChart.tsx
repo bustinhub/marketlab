@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AreaSeries, CandlestickSeries, ColorType, CrosshairMode, createChart, HistogramSeries, type UTCTimestamp } from "lightweight-charts";
-import { CandlestickChart, Expand, LineChart, RotateCcw } from "lucide-react";
+import { CandlestickChart, Maximize2, Minimize2, LineChart, RotateCcw } from "lucide-react";
 
 const ranges:Record<string,{interval:string;outputsize:number}>={
   "1D":{interval:"5min",outputsize:90},
@@ -31,6 +31,13 @@ export function MarketChart({symbol,price}:{symbol:string;price:number}){
   const [rows,setRows]=useState<any[]>([]);
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState("");
+
+  useEffect(()=>{
+    if(!expanded)return;
+    const onKey=(event:KeyboardEvent)=>{if(event.key==="Escape")setExpanded(false)};
+    window.addEventListener("keydown",onKey);
+    return()=>window.removeEventListener("keydown",onKey);
+  },[expanded]);
 
   useEffect(()=>{
     let cancelled=false;
@@ -111,7 +118,7 @@ export function MarketChart({symbol,price}:{symbol:string;price:number}){
         <button className={style==="candles"?"active":""} onClick={()=>setStyle("candles")} title="Candles"><CandlestickChart size={16}/></button>
         <button className={style==="area"?"active":""} onClick={()=>setStyle("area")} title="Line"><LineChart size={16}/></button>
         <button onClick={()=>chartRef.current?.timeScale().fitContent()} title="Reset view"><RotateCcw size={15}/></button>
-        <button onClick={()=>setExpanded(v=>!v)} title="Expand chart"><Expand size={15}/></button>
+        <button onClick={()=>setExpanded(v=>!v)} title={expanded?"Exit full chart":"Full chart"}>{expanded?<Minimize2 size={15}/>:<Maximize2 size={15}/>}</button>
       </div>
     </div>
     <div className="chartStage">
