@@ -12,7 +12,7 @@ export async function GET(request:NextRequest){
   const auth=await requireUser(request);
   if(auth.error)return NextResponse.json({error:auth.error},{status:auth.status});
   const {data:memberships,error}=await auth.admin!.from("class_members")
-    .select("class_id,role,classes(id,name,period,code,starting_cash,trading_enabled,public_holdings,allow_fractional,teacher_id,created_at)")
+    .select("class_id,role,classes(id,name,period,code,starting_cash,trading_enabled,public_holdings,allow_fractional,market_hours_only,teacher_id,created_at)")
     .eq("user_id",auth.user!.id)
     .order("joined_at",{ascending:false});
   if(error)return NextResponse.json({error:error.message},{status:500});
