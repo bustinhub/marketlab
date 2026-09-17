@@ -16,8 +16,9 @@ const ranges:Record<string,{interval:string;outputsize:number}>={
 };
 
 function unix(datetime:string):UTCTimestamp{
-  const normalized=datetime.includes("T")?datetime:datetime.replace(" ","T");
-  return Math.floor(new Date(normalized+"Z").getTime()/1000) as UTCTimestamp;
+  const dateOnly=/^\d{4}-\d{2}-\d{2}$/.test(datetime);
+  const normalized=dateOnly ? datetime+"T00:00:00Z" : datetime.replace(" ","T")+"Z";
+  return Math.floor(new Date(normalized).getTime()/1000) as UTCTimestamp;
 }
 
 export function MarketChart({symbol,price}:{symbol:string;price:number}){
