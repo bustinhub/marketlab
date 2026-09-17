@@ -89,6 +89,7 @@ export default function TeacherPage(){
         <div className="leaderAvatar">{m.display_name.split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase()}</div>
         <div><b>{m.display_name}</b><small>Joined {new Date(m.joined_at).toLocaleDateString()}</small></div>
         <div><span>Role</span><b>Student</b></div>
+        <Link className="smallButton" href={"/teacher/student/"+m.user_id}>View</Link>
         <button className="removeMember" onClick={()=>void removeStudent(m.user_id,m.display_name)} title="Remove student"><Trash2 size={14}/></button>
       </div>)}</div>}
     </section>
