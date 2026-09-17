@@ -55,11 +55,24 @@ export function TradingProvider({children}:{children:React.ReactNode}){
   const [watchlist,setWatchlist]=useState<string[]>(["AAPL","NVDA","TSLA","MSFT","AMZN"]);
 
   useEffect(()=>{
-    try{
-      const saved=JSON.parse(localStorage.getItem(WATCHLIST_KEY)||"null");
-      if(Array.isArray(saved)&&saved.length)setWatchlist(saved.slice(0,20));
-    }catch{}
-  },[]);
+    async function loadWatchlist(){
+      if(user){
+        const access=token();
+        if(access){
+          try{
+            const res=await fetch("/api/watchlist",{headers:{Authorization:"Bearer "+access},cache:"no-store"});
+            const data=await res.json();
+            if(res.ok&&Array.isArray(data.symbols)&&data.symbols.length){setWatchlist(data.symbols.slice(0,20));return}
+          }catch{}
+        }
+      }
+      try{
+        const saved=JSON.parse(localStorage.getItem(WATCHLIST_KEY)||"null");
+        if(Array.isArray(saved)&&saved.length)setWatchlist(saved.slice(0,20));
+      }catch{}
+    }
+    void loadWatchlist();
+  },[user?.id]);
 
   function setSelected(symbol:string){
     const next=symbol.trim().toUpperCase();
@@ -155,8 +168,17 @@ export function TradingProvider({children}:{children:React.ReactNode}){
   function toggleWatchlist(symbol:string){
     const clean=symbol.toUpperCase();
     setWatchlist(prev=>{
-      const next=prev.includes(clean)?prev.filter(s=>s!==clean):[...prev,clean].slice(0,20);
+      const removing=prev.includes(clean);
+      const next=removing?prev.filter(s=>s!==clean):[...prev,clean].slice(0,20);
       localStorage.setItem(WATCHLIST_KEY,JSON.stringify(next));
+      const access=token();
+      if(user&&access){
+        void fetch(removing?("/api/watchlist?symbol="+encodeURIComponent(clean)):"/api/watchlist",{
+          method:removing?"DELETE":"POST",
+          headers:removing?{Authorization:"Bearer "+access}:{"content-type":"application/json",Authorization:"Bearer "+access},
+          body:removing?undefined:JSON.stringify({symbol:clean})
+        }).catch(()=>{});
+      }
       return next;
     });
   }
