@@ -116,7 +116,7 @@ export async function getQuotes(symbols:string[]){
 }
 
 export async function getCandles(symbol:string,interval:string,outputsize:number){
-  const data=await td("/time_series",{symbol,interval,outputsize,order:"ASC"});
+  const data=await td("/time_series",{symbol,interval,outputsize,order:"ASC",timezone:"UTC"});
   const values=Array.isArray(data?.values)?data.values:[];
   return {
     meta:{
