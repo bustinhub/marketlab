@@ -7,7 +7,7 @@ import { useClassroom } from "./ClassroomProvider";
 export type MarketQuote={
   symbol:string;name:string;exchange:string;currency:string;price:number;
   open:number;high:number;low:number;previousClose:number;change:number;changePercent:number;volume:number;
-  datetime:string;timestamp:number;
+  datetime:string;timestamp:number;isMarketOpen?:boolean;
 };
 export type Holding={symbol:string;shares:number;avgCost:number};
 export type Trade={id:string;symbol:string;side:"BUY"|"SELL";shares:number;price:number;total:number;createdAt:string};
