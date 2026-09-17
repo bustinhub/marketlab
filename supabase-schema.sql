@@ -20,9 +20,12 @@ create table if not exists public.classes (
   trading_enabled boolean not null default true,
   public_holdings boolean not null default false,
   allow_fractional boolean not null default true,
+  market_hours_only boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.classes add column if not exists market_hours_only boolean not null default true;
 
 create table if not exists public.class_members (
   class_id uuid not null references public.classes(id) on delete cascade,
