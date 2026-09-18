@@ -42,7 +42,7 @@ export async function POST(request:NextRequest){
   if(name.length<2)return NextResponse.json({error:"Class name is required."},{status:400});
 
   const {data:profile}=await auth.admin!.from("profiles").select("role").eq("id",auth.user!.id).maybeSingle();
-  if(profile?.role!=="teacher")return NextResponse.json({error:"Teacher account required."},{status:403});
+  if(profile?.role!=="teacher"&&profile?.role!=="owner")return NextResponse.json({error:"Teacher account required."},{status:403});
 
   let classroom:any=null;
   for(let attempt=0;attempt<5&&!classroom;attempt++){
