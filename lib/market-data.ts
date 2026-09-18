@@ -38,8 +38,8 @@ function yahooInterval(interval:string){
 }
 function yahooRange(interval:string,outputsize:number){
   if(interval==="1min")return outputsize>390?"5d":"1d";
-  if(interval==="5min")return outputsize>390?"1mo":"5d";
-  if(interval==="15min"||interval==="30min")return outputsize>250?"3mo":"1mo";
+  if(interval==="5min")return outputsize<=160?"1d":outputsize<=500?"5d":"1mo";
+  if(interval==="15min"||interval==="30min")return outputsize<=220?"5d":outputsize>500?"3mo":"1mo";
   if(interval==="1h"||interval==="4h")return outputsize>500?"1y":"3mo";
   if(interval==="1day")return outputsize>370?"2y":"1y";
   if(interval==="1week")return outputsize>260?"10y":"5y";
@@ -51,7 +51,7 @@ async function yahooChart(symbol:string,interval="1m",range="1d"){
   const url=new URL("https://query1.finance.yahoo.com/v8/finance/chart/"+encodeURIComponent(clean));
   url.searchParams.set("interval",interval);
   url.searchParams.set("range",range);
-  url.searchParams.set("includePrePost","true");
+  url.searchParams.set("includePrePost","false");
   url.searchParams.set("events","div,splits");
   const res=await fetch(url,{
     headers:{
