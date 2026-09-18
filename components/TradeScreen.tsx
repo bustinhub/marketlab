@@ -14,7 +14,7 @@ function money(n:number,currency="USD"){
 function compact(n:number){return n?Intl.NumberFormat("en-US",{notation:"compact",maximumFractionDigits:2}).format(n):"—"}
 
 export function TradeScreen({initialSymbol="AAPL"}:{initialSymbol?:string}){
-  const {selected,setSelected,quote,quoteLoading,marketError,watchlist,toggleWatchlist,loadQuote}=useTrading();
+  const {selected,setSelected,quote,quoteLoading,watchlist,toggleWatchlist,loadQuote}=useTrading();
 
   useEffect(()=>{
     const symbol=initialSymbol.toUpperCase();
@@ -51,7 +51,6 @@ export function TradeScreen({initialSymbol="AAPL"}:{initialSymbol?:string}){
         </button>
       </section>
 
-      {marketError&&<div className="marketError tradeError">{marketError}</div>}
 
       <section className="terminalCard">
         <MarketChart symbol={symbol} price={quote?.price||0}/>

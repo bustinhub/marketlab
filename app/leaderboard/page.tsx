@@ -6,14 +6,14 @@ import {AppShell} from "@/components/AppShell";
 import {useAuth} from "@/components/AuthProvider";
 import {useClassroom} from "@/components/ClassroomProvider";
 
-type Row={user_id:string;display_name:string;portfolio_value:number;return_percent:number;holdings_count:number};
+type Row={user_id:string;display_name:string;username?:string;portfolio_value:number;return_percent:number;holdings_count:number};
 const money=(n:number)=>n.toLocaleString("en-US",{style:"currency",currency:"USD"});
 const pct=(n:number)=>(n>=0?"+":"")+n.toFixed(2)+"%";
 const initials=(n:string)=>n.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join("").toUpperCase();
 
 function Podium({row,rank,you}:{row:Row;rank:1|2|3;you:boolean}){
  return <div className={"podiumCard podium"+rank+(you?" you":"")}>
-  <div className="podiumPerson"><div className="podiumAvatar">{initials(row.display_name)}</div><b>{row.display_name}</b><span className={row.return_percent>=0?"up":"down"}>{pct(row.return_percent)}</span></div>
+  <div className="podiumPerson"><div className="podiumAvatar">{initials(row.display_name)}</div><b>{row.display_name}</b>{row.username&&<small>@{row.username}</small>}<span className={row.return_percent>=0?"up":"down"}>{pct(row.return_percent)}</span></div>
   <div className="podiumBlock"><strong>{rank}</strong><small>{money(row.portfolio_value)}</small></div>
  </div>;
 }
@@ -65,7 +65,7 @@ export default function LeaderboardPage(){
     <div className="leaderboardListHead"><span>Rank</span><span>Student</span><span>Portfolio</span><span>Return</span><span>Positions</span></div>
     {rest.map((r,i)=><div key={r.user_id} className={r.user_id===user.id?"leaderboardRow you":"leaderboardRow"}>
      <div className="rankNumber">{i+4}</div>
-     <div className="leaderPerson"><div className="leaderAvatar">{initials(r.display_name)}</div><div><b>{r.display_name}</b><small>{r.user_id===user.id?"You":"Student"}</small></div></div>
+     <div className="leaderPerson"><div className="leaderAvatar">{initials(r.display_name)}</div><div><b>{r.display_name}</b><small>{r.username?"@"+r.username:(r.user_id===user.id?"You":"Student")}</small></div></div>
      <div><span>Portfolio</span><b>{money(r.portfolio_value)}</b></div>
      <div><span>Return</span><b className={r.return_percent>=0?"up":"down"}>{pct(r.return_percent)}</b></div>
      <div><span>Positions</span><b>{r.holdings_count}</b></div>

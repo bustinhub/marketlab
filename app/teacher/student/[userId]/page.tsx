@@ -45,7 +45,7 @@ export default function StudentPortfolioPage(){
     return()=>{cancelled=true};
   },[user?.id,activeClass?.id,params.userId]);
 
-  if(!user||profile?.role!=="teacher")return <AppShell><div className="pageContainer"><div className="emptyPanel"><b>Teacher account required.</b></div></div></AppShell>;
+  if(!user||(profile?.role!=="teacher"&&profile?.role!=="owner"))return <AppShell><div className="pageContainer"><div className="emptyPanel"><b>Teacher account required.</b></div></div></AppShell>;
   if(!activeClass)return <AppShell><div className="pageContainer"><div className="emptyPanel"><b>Select a class first.</b><Link className="primaryButton" href="/classes">Classes</Link></div></div></AppShell>;
 
   return <AppShell><div className="pageContainer">
