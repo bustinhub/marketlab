@@ -65,8 +65,8 @@ export function MarketChart({symbol,price}:{symbol:string;price:number}){
     const chart=createChart(host.current,{
       autoSize:true,
       height:expanded?700:510,
-      layout:{background:{type:ColorType.Solid,color:"#0f0f0f"},textColor:"#8f8f98",fontFamily:'-apple-system,BlinkMacSystemFont,"Trebuchet MS",Roboto,Ubuntu,sans-serif'},
-      grid:{vertLines:{color:"#15191f"},horzLines:{color:"#15191f"}},
+      layout:{background:{type:ColorType.Solid,color:"#0f0f0f"},textColor:"#9a9aa1",fontFamily:'"Trebuchet MS",Roboto,Ubuntu,sans-serif',fontSize:12},
+      grid:{vertLines:{color:"#1a1a1d"},horzLines:{color:"#1a1a1d"}},
       rightPriceScale:{borderColor:"#242930",scaleMargins:{top:.08,bottom:.2}},
       timeScale:{borderColor:"#242930",timeVisible:true,secondsVisible:false,rightOffset:3,barSpacing:7},
       crosshair:{mode:CrosshairMode.Normal,vertLine:{color:"#565e68",width:1,labelBackgroundColor:"#363d46"},horzLine:{color:"#565e68",width:1,labelBackgroundColor:"#363d46"}},
@@ -125,7 +125,7 @@ export function MarketChart({symbol,price}:{symbol:string;price:number}){
     <div className="chartStage">
       <div ref={host} className="marketChart"/>
       {loading&&<div className="chartOverlay">Loading {symbol}…</div>}
-      {!loading&&error&&<div className="chartOverlay error">{error}</div>}
+      {!loading&&error&&<div className="chartOverlay chartMuted">{error==="Market data is not configured."?"Market feed unavailable":error}</div>}
     </div>
   </div>;
 }
