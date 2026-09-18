@@ -1,13 +1,11 @@
 import Link from "next/link";
 
-export function MarketLabMark({size=36}:{size?:number}){
+export function MarketLabMark({size=34}:{size?:number}){
   return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" aria-label="MarketLab logo">
-      <path d="M8 12V29M5.5 17H10.5V24H5.5V17Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-      <path d="M19 8V27M16.5 12H21.5V20H16.5V12Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-      <path d="M30 14V31M27.5 19H32.5V26H27.5V19Z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round"/>
-      <path d="M4 31L13 25L21 28L35 9" stroke="#2962FF" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"/>
-      <circle cx="35" cy="9" r="2.6" fill="#26A69A"/>
+    <svg width={size} height={size} viewBox="0 0 36 36" fill="none" aria-label="MarketLab logo">
+      <path d="M5.5 25.5V10.5L12.5 19.5L18 11L23.5 19.5L30.5 8.5V25.5" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M20.5 25.5L25.2 20.8L28.2 22.7L32 17.2" stroke="#6F8FFF" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"/>
+      <circle cx="32" cy="17.2" r="1.8" fill="#6F8FFF"/>
     </svg>
   );
 }
@@ -15,7 +13,7 @@ export function MarketLabMark({size=36}:{size?:number}){
 export function BrandLogo({compact=false}:{compact?:boolean}){
   return (
     <Link href="/" className="brandLogo" aria-label="MarketLab home">
-      <MarketLabMark size={34}/>
+      <MarketLabMark size={31}/>
       {!compact&&<span className="brandWord"><b>Market</b><strong>Lab</strong></span>}
     </Link>
   );
