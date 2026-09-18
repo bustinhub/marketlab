@@ -13,6 +13,11 @@ function money(n:number,currency="USD"){
   catch{return "$"+n.toFixed(2)}
 }
 function compact(n:number){return n?Intl.NumberFormat("en-US",{notation:"compact",maximumFractionDigits:2}).format(n):"—"}
+function updated(value:string){
+  const d=new Date(value);
+  if(Number.isNaN(d.getTime()))return "";
+  return d.toLocaleString("en-US",{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+}
 
 export function TradeScreen({initialSymbol="AAPL"}:{initialSymbol?:string}){
   const {selected,setSelected,quote,quoteLoading,watchlist,toggleWatchlist,loadQuote}=useTrading();
@@ -51,7 +56,7 @@ export function TradeScreen({initialSymbol="AAPL"}:{initialSymbol?:string}){
         {quote&&<div className="quoteBlock quoteBlockV2">
           <strong>{money(quote.price,currency)}</strong>
           <span className={changeClass}>{quote.change>=0?"+":"-"}{money(Math.abs(quote.change),currency)} ({quote.changePercent>=0?"+":""}{quote.changePercent.toFixed(2)}%)</span>
-          {quote.datetime&&<small>Updated {quote.datetime}</small>}
+          {quote.datetime&&<small>Updated {updated(quote.datetime)}</small>}
         </div>}
 
         {!quote&&quoteLoading&&<div className="quoteLoading">Loading quote…</div>}
@@ -62,7 +67,7 @@ export function TradeScreen({initialSymbol="AAPL"}:{initialSymbol?:string}){
       </section>
 
       <section className="terminalCard terminalCardV2">
-        <MarketChart symbol={symbol} exchange={exchange}/>
+        <MarketChart symbol={symbol} price={quote?.price||0}/>
       </section>
 
       {quote&&<section className="statRibbon compactStats">
