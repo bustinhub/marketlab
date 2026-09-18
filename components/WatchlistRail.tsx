@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Star } from "lucide-react";
 import { useTrading } from "./TradingProvider";
 import { TradeTicket } from "./TradeTicket";
+import { StockLogo, getStockMeta } from "./StockLogo";
 
 function price(n?:number){return typeof n==="number"?n.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}):"—"}
 function percent(n?:number){return typeof n==="number"?(n>=0?"+":"")+n.toFixed(2)+"%":"—"}
@@ -21,10 +22,14 @@ export function WatchlistRail({symbol}:{symbol:string}){
       <div className="watchRows">
         {watchlist.map(sym=>{
           const q=quotes[sym];
+          const fallback=getStockMeta(sym);
           return <button key={sym} className={sym===symbol?"watchRow active":"watchRow"} onClick={()=>open(sym)}>
-            <div><span><b>{sym}</b><small>{q?.name||""}</small></span></div>
+            <div className="watchSymbol">
+              <StockLogo symbol={sym} size={25}/>
+              <span><b>{sym}</b><small>{q?.name||fallback?.name||""}</small></span>
+            </div>
             <strong>{price(q?.price)}</strong>
-            <em className={(q?.changePercent??0)>=0?"up":"down"}>{percent(q?.changePercent)}</em>
+            <em className={typeof q?.changePercent==="number"?(q.changePercent>=0?"up":"down"):""}>{percent(q?.changePercent)}</em>
           </button>
         })}
       </div>
