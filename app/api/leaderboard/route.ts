@@ -14,7 +14,7 @@ export async function GET(request:NextRequest){
   if(!membership)return NextResponse.json({error:"You are not in this class."},{status:403});
 
   const {data:members,error:memberError}=await auth.admin!.from("class_members")
-    .select("user_id,role,profiles(display_name)")
+    .select("user_id,role,profiles(username,display_name)")
     .eq("class_id",classId).eq("role","student");
   if(memberError)return NextResponse.json({error:memberError.message},{status:500});
 
@@ -40,10 +40,10 @@ export async function GET(request:NextRequest){
     }catch{}
   }
 
-  const profileMap=new Map((members||[]).map((m:any)=>[
-    m.user_id,
-    (Array.isArray(m.profiles)?m.profiles[0]?.display_name:m.profiles?.display_name)||"Student"
-  ]));
+  const profileMap=new Map((members||[]).map((m:any)=>{
+    const profile=Array.isArray(m.profiles)?m.profiles[0]:m.profiles;
+    return [m.user_id,{display_name:profile?.display_name||"Student",username:profile?.username||""}];
+  }));
 
   const rows=(portfolios||[]).map((p:any)=>{
     const positions=(holdings||[]).filter((h:any)=>h.portfolio_id===p.id);
@@ -52,7 +52,8 @@ export async function GET(request:NextRequest){
     const starting=Number(p.starting_balance);
     return {
       user_id:p.user_id,
-      display_name:profileMap.get(p.user_id)||"Student",
+      display_name:(profileMap.get(p.user_id) as any)?.display_name||"Student",
+      username:(profileMap.get(p.user_id) as any)?.username||"",
       portfolio_value:value,
       return_percent:starting?((value-starting)/starting)*100:0,
       holdings_count:positions.length,
