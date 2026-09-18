@@ -64,12 +64,13 @@ export function TradeTicket({symbol}:{symbol:string}){
     <div className="amountField"><div><span>{mode==="dollars"?"$":""}</span><input aria-label={mode==="shares"?"Shares":"Dollars"} inputMode="decimal" value={amount} onChange={e=>{setAmount(e.target.value);setReview(false)}}/></div></div>
 
     <div className="ticketRows">
+      <div><span>Order type</span><b>Market</b></div>
       <div><span>Shares</span><b>{shares.toFixed(4)}</b></div>
       <div><span>Estimated total</span><b>{stock?money(total):"—"}</b></div>
       <div><span>{side==="BUY"?"Buying power":"Shares owned"}</span><b>{side==="BUY"?money(cash):(holding?.shares??0).toFixed(4)}</b></div>
     </div>
 
-    {review&&<div className="reviewBox"><div><b>Review order</b><span>{side} {shares.toFixed(4)} {symbol} at the latest quote.</span></div></div>}
+    {review&&<div className="reviewBox"><div><b>Review market order</b><span>{side} {shares.toFixed(4)} {symbol}. The server rechecks the latest quote before execution.</span></div></div>}
     {notice&&<div className={notice.ok?"ticketNotice ok":"ticketNotice"}>{notice.ok?<Check size={15}/>:<AlertCircle size={15}/>}<span>{notice.text}</span></div>}
 
     <button disabled={!valid||busy} className={side==="BUY"?"primaryOrder buy":"primaryOrder sell"} onClick={()=>void submit()}>

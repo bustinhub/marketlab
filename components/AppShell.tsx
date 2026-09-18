@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { BarChart3, BookOpen, GraduationCap, LogIn, Search, Trophy, Users, WalletCards } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BrandLogo } from "./BrandLogo";
+import { StockLogo } from "./StockLogo";
 import { useTrading } from "./TradingProvider";
 import { useAuth } from "./AuthProvider";
 import { useClassroom } from "./ClassroomProvider";
@@ -56,10 +57,19 @@ export function AppShell({children,rightRail}:{children:React.ReactNode;rightRai
   },[query]);
 
   function openSymbol(symbol:string){
+    const clean=symbol.trim().toUpperCase();
+    if(!clean)return;
     setQuery("");
     setResults([]);
-    setSelected(symbol);
-    router.push("/trade?symbol="+encodeURIComponent(symbol));
+    setSelected(clean);
+    router.push("/trade?symbol="+encodeURIComponent(clean));
+  }
+
+  function submitSearch(event:React.FormEvent){
+    event.preventDefault();
+    if(results[0]){openSymbol(results[0].symbol);return}
+    const direct=query.trim().toUpperCase();
+    if(/^[A-Z][A-Z0-9.\-]{0,9}$/.test(direct))openSymbol(direct);
   }
 
   const initials=useMemo(()=>{
@@ -81,19 +91,23 @@ export function AppShell({children,rightRail}:{children:React.ReactNode;rightRai
     <header className="appTopbar">
       <BrandLogo/>
 
-      <div className="globalSearch">
+      <form className="globalSearch" onSubmit={submitSearch}>
         <Search size={15}/>
-        <input ref={searchInput} value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search ticker or company"/>
-        <kbd>⌘K</kbd>
+        <input ref={searchInput} value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search ticker or company" autoComplete="off"/>
+        <kbd>↵</kbd>
         {(query&&results.length>0)&&<div className="globalSearchMenu">
-          {results.map(s=><button key={s.exchange+":"+s.symbol} onClick={()=>openSymbol(s.symbol)}>
-            <span className="symbolChip">{s.symbol.slice(0,1)}</span>
+          {results.map(s=><button type="button" key={s.exchange+":"+s.symbol} onClick={()=>openSymbol(s.symbol)}>
+            <StockLogo symbol={s.symbol} size={28}/>
             <span><b>{s.symbol}</b><small>{s.name}</small></span>
             <em>{s.exchange}</em>
           </button>)}
         </div>}
         {query&&searching&&<div className="searchStatus">Searching…</div>}
-      </div>
+        {query&&!searching&&!results.length&&/^[A-Za-z][A-Za-z0-9.\-]{0,9}$/.test(query.trim())&&
+          <div className="globalSearchMenu directSearch">
+            <button type="submit"><StockLogo symbol={query.trim()} size={28}/><span><b>{query.trim().toUpperCase()}</b><small>Open symbol</small></span><em>Enter</em></button>
+          </div>}
+      </form>
 
       <div className="topbarMeta">
         {user&&<Link href="/classes" className="topClassPill">

@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 const stockMeta:Record<string,{name:string;domain:string;exchange:string}>={
   AAPL:{name:"Apple Inc",domain:"apple.com",exchange:"NASDAQ"},
   NVDA:{name:"NVIDIA Corp.",domain:"nvidia.com",exchange:"NASDAQ"},
@@ -24,11 +28,27 @@ export function getStockMeta(symbol:string){
 export function StockLogo({symbol,size=40}:{symbol:string;size?:number}){
   const clean=symbol.toUpperCase();
   const meta=getStockMeta(clean);
-  if(!meta){
-    return <span className="stockLogo stockLogoFallback" style={{width:size,height:size}}>{clean.slice(0,1)}</span>;
-  }
-  const src="https://www.google.com/s2/favicons?sz=128&domain_url=https://"+meta.domain;
+  const primary="https://financialmodelingprep.com/image-stock/"+encodeURIComponent(clean)+".png";
+  const secondary=meta?"https://www.google.com/s2/favicons?sz=128&domain_url=https://"+meta.domain:"";
+  const [src,setSrc]=useState(primary);
+  const [failed,setFailed]=useState(false);
+
+  useEffect(()=>{
+    setSrc(primary);
+    setFailed(false);
+  },[primary]);
+
   return <span className="stockLogo" style={{width:size,height:size}}>
-    <img src={src} alt="" width={size} height={size}/>
+    {!failed&&<img
+      src={src}
+      alt=""
+      width={Math.max(16,Math.round(size*.68))}
+      height={Math.max(16,Math.round(size*.68))}
+      onError={()=>{
+        if(secondary&&src!==secondary)setSrc(secondary);
+        else setFailed(true);
+      }}
+    />}
+    {failed&&<span className="stockLogoLetter">{clean.slice(0,1)}</span>}
   </span>;
 }
