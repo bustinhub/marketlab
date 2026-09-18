@@ -9,11 +9,12 @@ export async function GET(request:NextRequest,{params}:{params:Promise<{id:strin
   if(!membership)return NextResponse.json({error:"You are not in this class."},{status:403});
 
   const {data,error}=await auth.admin!.from("class_members")
-    .select("user_id,role,joined_at,profiles(display_name)")
+    .select("user_id,role,joined_at,profiles(username,display_name)")
     .eq("class_id",id).order("joined_at",{ascending:true});
   if(error)return NextResponse.json({error:error.message},{status:500});
   const members=(data||[]).map((m:any)=>({
     user_id:m.user_id,role:m.role,joined_at:m.joined_at,
+    username:(Array.isArray(m.profiles)?m.profiles[0]?.username:m.profiles?.username)||"",
     display_name:(Array.isArray(m.profiles)?m.profiles[0]?.display_name:m.profiles?.display_name)||"Student"
   }));
   return NextResponse.json({members});
