@@ -4,7 +4,13 @@ import type { Session, User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { getSupabaseBrowser } from "@/lib/supabase-browser";
 
-type Profile={id:string;display_name:string;role:"student"|"teacher"};
+export type Profile={
+  id:string;
+  username:string;
+  display_name:string;
+  role:"student"|"teacher"|"owner";
+};
+
 type AuthContextValue={
   configured:boolean;
   loading:boolean;
@@ -12,7 +18,7 @@ type AuthContextValue={
   session:Session|null;
   profile:Profile|null;
   signIn:(email:string,password:string)=>Promise<{error?:string}>;
-  signUp:(email:string,password:string,displayName:string,role:"student"|"teacher")=>Promise<{error?:string;needsEmailConfirmation?:boolean}>;
+  signUp:(email:string,password:string,username:string,displayName:string,role:"student"|"teacher")=>Promise<{error?:string}>;
   signOut:()=>Promise<void>;
   refreshProfile:()=>Promise<void>;
   token:()=>string|null;
@@ -28,7 +34,7 @@ export function AuthProvider({children}:{children:React.ReactNode}){
 
   async function loadProfile(userId?:string){
     if(!supabase||!userId){setProfile(null);return}
-    const {data}=await supabase.from("profiles").select("id,display_name,role").eq("id",userId).maybeSingle();
+    const {data}=await supabase.from("profiles").select("id,username,display_name,role").eq("id",userId).maybeSingle();
     setProfile((data as Profile|null)??null);
   }
 
@@ -52,11 +58,29 @@ export function AuthProvider({children}:{children:React.ReactNode}){
     return error?{error:error.message}:{};
   }
 
-  async function signUp(email:string,password:string,displayName:string,role:"student"|"teacher"){
+  async function signUp(email:string,password:string,username:string,displayName:string,role:"student"|"teacher"){
     if(!supabase)return {error:"Authentication is not configured."};
-    const {data,error}=await supabase.auth.signUp({email,password,options:{data:{display_name:displayName.trim(),role}}});
-    if(error)return {error:error.message};
-    return {needsEmailConfirmation:!data.session};
+
+    const cleanUsername=username.trim().toLowerCase();
+    const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    if(!url||!key)return {error:"Authentication is not configured."};
+
+    try{
+      const response=await fetch(url+"/functions/v1/classroom-signup",{
+        method:"POST",
+        headers:{"content-type":"application/json",apikey:key},
+        body:JSON.stringify({email,password,username:cleanUsername,displayName:displayName.trim(),role})
+      });
+      const data=await response.json().catch(()=>({}));
+      if(!response.ok)return {error:data.error||"Could not create account."};
+
+      const {error}=await supabase.auth.signInWithPassword({email,password});
+      if(error)return {error:error.message};
+      return {};
+    }catch{
+      return {error:"Could not create account."};
+    }
   }
 
   async function signOut(){
