@@ -13,9 +13,9 @@ import {
 import { CandlestickChart, LineChart, Maximize2, Minimize2, RotateCcw } from "lucide-react";
 
 const ranges:Record<string,{interval:string;outputsize:number}>={
-  "1D":{interval:"5min",outputsize:120},
-  "5D":{interval:"15min",outputsize:180},
-  "1M":{interval:"1h",outputsize:220},
+  "1D":{interval:"1min",outputsize:390},
+  "5D":{interval:"5min",outputsize:390},
+  "1M":{interval:"30min",outputsize:200},
   "3M":{interval:"1day",outputsize:95},
   "6M":{interval:"1day",outputsize:190},
   "YTD":{interval:"1day",outputsize:280},
