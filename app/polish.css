@@ -1,0 +1,212 @@
+/* MarketLab consistency pass */
+*{scrollbar-color:#343438 #0f0f10;scrollbar-width:thin}
+*::-webkit-scrollbar{width:10px;height:10px}
+*::-webkit-scrollbar-track{background:#0f0f10}
+*::-webkit-scrollbar-thumb{background:#343438;border:2px solid #0f0f10;border-radius:10px}
+*::-webkit-scrollbar-thumb:hover{background:#48484e}
+
+.feedBadge{
+  font-family:-apple-system,BlinkMacSystemFont,"Trebuchet MS",Roboto,Ubuntu,sans-serif!important;
+  font-weight:400!important;
+  letter-spacing:.02em!important;
+  text-transform:none!important;
+}
+.feedBadge i{flex:0 0 auto}
+
+.simpleTerminal,.simpleTerminal *{
+  font-family:-apple-system,BlinkMacSystemFont,"Trebuchet MS",Roboto,Ubuntu,sans-serif!important;
+}
+.simpleTerminal{
+  background:#0e0e0f!important;
+  border-color:#29292c!important;
+}
+.terminalTop,.simpleTerminalHead,.simpleTerminalFoot{color:#8e8e95!important}
+.terminalTop span,.terminalTop em{font-weight:500!important;letter-spacing:.04em!important}
+.simpleTerminalHead b{font-size:20px!important;font-weight:650!important}
+.simpleTerminalHead span,.simpleTerminalHead small{font-weight:400!important}
+.simpleFeatures{
+  padding:0!important;
+  margin-bottom:72px!important;
+  background:transparent!important;
+  border:1px solid #29292c!important;
+  gap:0!important;
+}
+.simpleFeatures article{
+  min-height:122px!important;
+  background:#111112!important;
+  border-right:1px solid #29292c!important;
+}
+.simpleFeatures article:last-child{border-right:0!important}
+.simpleFeatures b{font-weight:600!important}
+.simpleFeatures span{font-weight:400!important}
+
+.comingSoonPage{
+  min-height:calc(100vh - 60px);
+  display:grid;
+  place-items:center;
+  padding:40px;
+  background:#0f0f0f;
+}
+.comingSoonInner{text-align:center;transform:translateY(-4vh)}
+.comingSoonInner span{
+  display:block;
+  margin-bottom:12px;
+  color:#66666e;
+  font-size:9px;
+  font-weight:500;
+  letter-spacing:.14em;
+}
+.comingSoonInner h1{
+  margin:0;
+  font-size:42px;
+  line-height:1;
+  letter-spacing:-.04em;
+  font-weight:650;
+}
+.comingSoonInner p{
+  margin:12px 0 0;
+  color:#7d7d84;
+  font-size:12px;
+}
+
+.leaderboardPage{max-width:1060px!important}
+.leaderboardHero{text-align:center!important}
+.leaderboardHero>div{margin:0 auto}
+.leaderboardLoading{
+  min-height:360px;
+  display:grid;
+  place-items:center;
+  color:#74747c;
+  font-size:11px;
+}
+.leaderboardEmpty{min-height:300px!important}
+.podium{
+  display:grid;
+  grid-template-columns:1fr 1.12fr 1fr;
+  align-items:end;
+  gap:14px;
+  max-width:780px;
+  margin:18px auto 34px;
+  padding:18px 0 0;
+}
+.podiumCard{
+  display:flex;
+  min-width:0;
+  flex-direction:column;
+  align-items:stretch;
+  justify-content:flex-end;
+}
+.podiumPerson{
+  min-height:118px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  gap:6px;
+  padding:8px 8px 12px;
+  text-align:center;
+}
+.podiumAvatar{
+  width:44px;height:44px;
+  display:grid;place-items:center;
+  border-radius:50%;
+  border:1px solid #3a3a3f;
+  background:#202022;
+  color:#ededf0;
+  font-size:11px;
+  font-weight:650;
+}
+.podiumPerson b{
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:12px;
+  font-weight:600;
+}
+.podiumPerson>span{font-size:10px;font-weight:500}
+.podiumBlock{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  border:1px solid #303034;
+  border-bottom:0;
+  background:#171719;
+  border-radius:8px 8px 0 0;
+  padding:16px 10px 12px;
+}
+.podiumBlock strong{
+  font-size:34px;
+  line-height:1;
+  font-weight:650;
+  letter-spacing:-.04em;
+}
+.podiumBlock small{font-size:9px;color:#8a8a91}
+.podium1 .podiumBlock{min-height:210px;background:#1c1c20;border-color:#4b4b53}
+.podium1 .podiumAvatar{width:52px;height:52px;border-color:#56565e;background:#27272b}
+.podium1 .podiumPerson b{font-size:13px}
+.podium2 .podiumBlock{min-height:164px}
+.podium3 .podiumBlock{min-height:136px}
+.podiumCard.you .podiumBlock{box-shadow:inset 0 2px #6f8fff}
+
+.leaderboardList{
+  border-top:1px solid #29292d;
+  border-bottom:1px solid #29292d;
+  background:#111112;
+}
+.leaderboardListHead{
+  display:grid;
+  grid-template-columns:58px minmax(0,1fr) 150px 110px 90px;
+  gap:10px;
+  align-items:center;
+  min-height:34px;
+  padding:0 14px;
+  color:#64646c;
+  font-size:8px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.leaderboardList .leaderboardRow{
+  display:grid!important;
+  grid-template-columns:58px minmax(0,1fr) 150px 110px 90px!important;
+  gap:10px!important;
+  align-items:center!important;
+  min-height:64px!important;
+  padding:0 14px!important;
+  border-top:1px solid #242427!important;
+  background:#111112!important;
+}
+.leaderboardList .leaderboardRow.you{background:#171a24!important}
+.leaderboardList .leaderboardRow>div:not(.rankNumber):not(.leaderPerson){
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.leaderboardList .leaderboardRow>div>span{font-size:8px;color:#65656d}
+.leaderboardList .leaderboardRow>div>b{font-size:10px}
+.rankNumber{font-size:13px!important;color:#a2a2a8!important}
+.leaderPerson{display:flex!important;align-items:center!important;gap:10px!important}
+.leaderAvatar{width:34px!important;height:34px!important;border-radius:50%!important}
+.leaderPerson b{font-size:11px!important;font-weight:600!important}
+.leaderPerson small{font-size:8px!important;color:#66666e!important}
+
+@media(max-width:760px){
+  .simpleFeatures article{border-right:0!important;border-bottom:1px solid #29292c!important}
+  .simpleFeatures article:last-child{border-bottom:0!important}
+  .podium{gap:7px;margin-top:4px}
+  .podiumPerson{min-height:104px;padding-left:3px;padding-right:3px}
+  .podiumAvatar{width:38px;height:38px}
+  .podium1 .podiumAvatar{width:44px;height:44px}
+  .podiumPerson b{font-size:10px}
+  .podiumBlock{padding-left:5px;padding-right:5px}
+  .podium1 .podiumBlock{min-height:180px}
+  .podium2 .podiumBlock{min-height:145px}
+  .podium3 .podiumBlock{min-height:120px}
+  .podiumBlock strong{font-size:28px}
+  .leaderboardListHead{display:none}
+  .leaderboardList .leaderboardRow{grid-template-columns:38px minmax(0,1fr) 86px!important}
+  .leaderboardList .leaderboardRow>div:nth-child(4),
+  .leaderboardList .leaderboardRow>div:nth-child(5){display:none!important}
+}
