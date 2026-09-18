@@ -18,7 +18,7 @@ type AuthContextValue={
   session:Session|null;
   profile:Profile|null;
   signIn:(email:string,password:string)=>Promise<{error?:string}>;
-  signUp:(email:string,password:string,username:string,displayName:string,role:"student"|"teacher")=>Promise<{error?:string}>;
+  signUp:(email:string,password:string,username:string,displayName:string)=>Promise<{error?:string}>;
   signOut:()=>Promise<void>;
   refreshProfile:()=>Promise<void>;
   token:()=>string|null;
@@ -58,7 +58,7 @@ export function AuthProvider({children}:{children:React.ReactNode}){
     return error?{error:error.message}:{};
   }
 
-  async function signUp(email:string,password:string,username:string,displayName:string,role:"student"|"teacher"){
+  async function signUp(email:string,password:string,username:string,displayName:string){
     if(!supabase)return {error:"Authentication is not configured."};
 
     const cleanUsername=username.trim().toLowerCase();
@@ -70,7 +70,7 @@ export function AuthProvider({children}:{children:React.ReactNode}){
       const response=await fetch(url+"/functions/v1/classroom-signup",{
         method:"POST",
         headers:{"content-type":"application/json",apikey:key},
-        body:JSON.stringify({email,password,username:cleanUsername,displayName:displayName.trim(),role})
+        body:JSON.stringify({email,password,username:cleanUsername,displayName:displayName.trim()})
       });
       const data=await response.json().catch(()=>({}));
       if(!response.ok)return {error:data.error||"Could not create account."};
