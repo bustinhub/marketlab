@@ -65,7 +65,7 @@ export function MarketChart({symbol,price}:{symbol:string;price:number}){
     const chart=createChart(host.current,{
       autoSize:true,
       height:expanded?700:510,
-      layout:{background:{type:ColorType.Solid,color:"#080b0f"},textColor:"#787f89",fontFamily:'-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif'},
+      layout:{background:{type:ColorType.Solid,color:"#0f0f0f"},textColor:"#8f8f98",fontFamily:'-apple-system,BlinkMacSystemFont,"Trebuchet MS",Roboto,Ubuntu,sans-serif'},
       grid:{vertLines:{color:"#15191f"},horzLines:{color:"#15191f"}},
       rightPriceScale:{borderColor:"#242930",scaleMargins:{top:.08,bottom:.2}},
       timeScale:{borderColor:"#242930",timeVisible:true,secondsVisible:false,rightOffset:3,barSpacing:7},
