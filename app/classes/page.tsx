@@ -53,6 +53,12 @@ export default function ClassesPage(){
       {!user?
         <div className="emptyPanel"><Users size={24}/><b>Sign in to use classroom features.</b><Link href="/login" className="primaryButton">Sign in</Link></div>
       :<>
+        <div className="classSummaryBar">
+          <div><span>Account</span><b>{profile?.role==="owner"?"Owner":profile?.role==="teacher"?"Teacher":"Student"}</b></div>
+          <div><span>Classrooms</span><b>{classes.length}</b></div>
+          <div><span>Selected</span><b>{activeClass?.name||"None"}</b></div>
+        </div>
+
         <div className={canTeach?"classActionGrid teacherGrid":"classActionGrid studentGrid"}>
           <form className="premiumCard classForm classJoinCard" onSubmit={join}>
             <div className="classFormHead">
@@ -85,8 +91,9 @@ export default function ClassesPage(){
           <div className="classListTop">
             <div>
               <h2>Your classrooms</h2>
-              <p>{loading?"Loading…":classes.length?classes.length+" active":"No classes yet"}</p>
+              <p>{loading?"Loading…":classes.length?"Choose a classroom to make it active.":"Create or join a classroom to get started."}</p>
             </div>
+            <span className="classCountPill">{classes.length} {classes.length===1?"class":"classes"}</span>
           </div>
 
           {!loading&&!classes.length&&<div className="emptyClassState">
