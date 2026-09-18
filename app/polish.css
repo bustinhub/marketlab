@@ -210,3 +210,166 @@
   .leaderboardList .leaderboardRow>div:nth-child(4),
   .leaderboardList .leaderboardRow>div:nth-child(5){display:none!important}
 }
+
+/* Account + classroom polish */
+html,body,button,input,select,textarea{
+  font-family:-apple-system,BlinkMacSystemFont,"Trebuchet MS",Roboto,Ubuntu,sans-serif!important;
+}
+body{font-weight:600!important}
+small,.pageHero p,.classForm p,.emptyClassState span,.accountText span,.instrumentIdentity p{
+  font-weight:500!important;
+}
+button,input,select,textarea,a,label{font-weight:600}
+input::placeholder{font-weight:500}
+
+.topClassPill{
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  min-width:126px!important;
+}
+.topClassPill span,.topClassPill small{width:100%!important;text-align:center!important}
+.accountText{
+  display:flex!important;
+  flex-direction:column!important;
+  line-height:1.08!important;
+  min-width:58px!important;
+}
+.accountText b{font-size:10px!important;font-weight:650!important}
+.accountText span{font-size:8px!important;color:#77777f!important}
+.signOutLink{font-weight:500!important}
+
+.chartOverlay.chartMuted{
+  color:#686870!important;
+  background:transparent!important;
+  border:0!important;
+  font-size:10px!important;
+  font-weight:600!important;
+}
+.marketError.tradeError{display:none!important}
+
+.classesRefresh{max-width:1120px!important}
+.classesHero{
+  text-align:center!important;
+  padding-top:6px!important;
+  padding-bottom:28px!important;
+}
+.classesHero>div{margin:0 auto!important}
+.classesHero h1{font-size:34px!important;margin:0!important}
+.classesHero p{margin:8px 0 0!important;color:#75757d!important;font-size:11px!important}
+.classActionGrid{
+  max-width:940px!important;
+  margin:0 auto 14px!important;
+  display:grid!important;
+  gap:12px!important;
+}
+.classActionGrid.teacherGrid{grid-template-columns:minmax(300px,.8fr) minmax(430px,1.2fr)!important}
+.classActionGrid.studentGrid{grid-template-columns:minmax(320px,520px)!important;justify-content:center!important}
+.classForm{
+  padding:20px!important;
+  min-height:100%!important;
+  border:1px solid #2a2a2e!important;
+  background:#131314!important;
+}
+.classFormHead{
+  display:flex!important;
+  align-items:center!important;
+  gap:11px!important;
+  margin-bottom:18px!important;
+}
+.classFormIcon{
+  width:36px!important;
+  height:36px!important;
+  flex:0 0 36px!important;
+  display:grid!important;
+  place-items:center!important;
+  border-radius:7px!important;
+  background:#1d1d20!important;
+  border:1px solid #303034!important;
+  color:#9dafff!important;
+}
+.classFormHead h2{font-size:14px!important;margin:0!important}
+.classFormHead p{font-size:9px!important;margin:3px 0 0!important;color:#707078!important}
+.classForm label{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:6px!important;
+  margin:0 0 12px!important;
+  color:#8a8a91!important;
+  font-size:9px!important;
+}
+.classForm input{
+  height:39px!important;
+  border-radius:6px!important;
+  background:#0f0f10!important;
+  border:1px solid #303034!important;
+  padding:0 11px!important;
+  color:#f1f1f2!important;
+}
+.classForm .primaryButton{
+  min-height:39px!important;
+  border-radius:6px!important;
+  font-size:10px!important;
+}
+.refreshedClassList{
+  max-width:940px!important;
+  margin:0 auto!important;
+  padding:0!important;
+  overflow:hidden!important;
+}
+.classListTop{
+  min-height:64px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  padding:0 16px!important;
+  border-bottom:1px solid #29292d!important;
+}
+.classListTop h2{font-size:13px!important;margin:0!important}
+.classListTop p{font-size:8px!important;margin:3px 0 0!important;color:#6e6e76!important}
+.emptyClassState{
+  min-height:170px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  text-align:center!important;
+  color:#76767e!important;
+}
+.emptyClassState b{font-size:11px!important;color:#c4c4c8!important}
+.emptyClassState span{font-size:9px!important;max-width:330px!important}
+.classRow{
+  padding:0 15px!important;
+  grid-template-columns:36px minmax(0,1fr) 150px 74px!important;
+  min-height:64px!important;
+  border-top:1px solid #242427!important;
+}
+.classRow:first-of-type{border-top:0!important}
+.classRowMain b{font-size:11px!important}
+.classRowMain span{font-size:8px!important;color:#74747b!important}
+.classCode{justify-self:end!important}
+.classCode span{font-size:7px!important}
+.classCode b{font-size:10px!important}
+.classRow em{font-size:8px!important;font-weight:600!important;color:#77777f!important}
+
+.podiumPerson small{
+  margin-top:-2px!important;
+  color:#73737b!important;
+  font-size:8px!important;
+  font-weight:500!important;
+}
+
+@media(max-width:1100px){
+  .accountText{display:none!important}
+}
+@media(max-width:820px){
+  .classActionGrid.teacherGrid{grid-template-columns:1fr!important}
+  .classesHero{text-align:left!important}
+  .classesHero>div{margin:0!important}
+}
+@media(max-width:680px){
+  .classRow{grid-template-columns:34px minmax(0,1fr) 104px!important}
+  .classRow em{display:none!important}
+  .classesHero h1{font-size:28px!important}
+}
