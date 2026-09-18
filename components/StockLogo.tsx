@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const stockMeta:Record<string,{name:string;domain:string;exchange:string}>={
   AAPL:{name:"Apple Inc",domain:"apple.com",exchange:"NASDAQ"},
@@ -32,6 +32,11 @@ export function StockLogo({symbol,size=40}:{symbol:string;size?:number}){
   const secondary=meta?"https://www.google.com/s2/favicons?sz=128&domain_url=https://"+meta.domain:"";
   const [src,setSrc]=useState(primary);
   const [failed,setFailed]=useState(false);
+
+  useEffect(()=>{
+    setSrc(primary);
+    setFailed(false);
+  },[primary]);
 
   return <span className="stockLogo" style={{width:size,height:size}}>
     {!failed&&<img
