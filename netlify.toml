@@ -1,0 +1,4 @@
+[build.environment]
+NEXT_PUBLIC_SUPABASE_URL = "https://wszsxzvnckqmnttfifpn.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_CdFaLfYLEZ1SslQGHY2lIQ_xNUHx8Kf"
+SUPABASE_URL = "https://wszsxzvnckqmnttfifpn.supabase.co"
