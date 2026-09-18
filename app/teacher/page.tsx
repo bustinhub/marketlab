@@ -7,7 +7,7 @@ import { AppShell } from "@/components/AppShell";
 import { useAuth } from "@/components/AuthProvider";
 import { useClassroom } from "@/components/ClassroomProvider";
 
-type Member={user_id:string;role:"teacher"|"student";joined_at:string;display_name:string};
+type Member={user_id:string;role:"teacher"|"student";joined_at:string;display_name:string;username?:string};
 
 export default function TeacherPage(){
   const {user,profile,token}=useAuth();
@@ -76,7 +76,7 @@ export default function TeacherPage(){
     if(!res.ok)setError(data.error||"Could not remove student.");else await loadMembers();
   }
 
-  if(!user||profile?.role!=="teacher")return <AppShell><div className="pageContainer"><div className="emptyPanel"><b>Teacher account required.</b><Link href="/login" className="primaryButton">Sign in</Link></div></div></AppShell>;
+  if(!user||(profile?.role!=="teacher"&&profile?.role!=="owner"))return <AppShell><div className="pageContainer"><div className="emptyPanel"><b>Teacher account required.</b><Link href="/login" className="primaryButton">Sign in</Link></div></div></AppShell>;
   if(!activeClass||activeClass.member_role!=="teacher")return <AppShell><div className="pageContainer"><div className="emptyPanel"><b>Select one of your classes.</b><Link href="/classes" className="primaryButton">Classes</Link></div></div></AppShell>;
 
   const students=members.filter(m=>m.role==="student");
@@ -112,7 +112,7 @@ export default function TeacherPage(){
       {!students.length?<div className="emptyRow">Share code <b>{activeClass.code}</b> with students.</div>
       :<div className="teacherStudentRows">{students.map(m=><div className="teacherStudent" key={m.user_id}>
         <div className="leaderAvatar">{m.display_name.split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase()}</div>
-        <div><b>{m.display_name}</b><small>Joined {new Date(m.joined_at).toLocaleDateString()}</small></div>
+        <div><b>{m.display_name}</b><small>{m.username?"@"+m.username+" · ":""}Joined {new Date(m.joined_at).toLocaleDateString()}</small></div>
         <div><span>Role</span><b>Student</b></div>
         <Link className="smallButton" href={"/teacher/student/"+m.user_id}>View</Link>
         <button className="removeMember" onClick={()=>void removeStudent(m.user_id,m.display_name)} title="Remove student"><Trash2 size={14}/></button>
