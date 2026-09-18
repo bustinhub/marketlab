@@ -10,7 +10,6 @@ export default function LoginPage(){
   const router=useRouter();
   const {configured,user,signIn,signUp}=useAuth();
   const [mode,setMode]=useState<"signin"|"signup">("signin");
-  const [role,setRole]=useState<"student"|"teacher">("student");
   const [username,setUsername]=useState("");
   const [name,setName]=useState("");
   const [email,setEmail]=useState("");
@@ -26,7 +25,7 @@ export default function LoginPage(){
     setBusy(true);
     const result=mode==="signin"
       ?await signIn(email,password)
-      :await signUp(email,password,username,name,role);
+      :await signUp(email,password,username,name);
 
     if(result.error)setError(result.error);
     else router.replace("/classes");
@@ -58,12 +57,6 @@ export default function LoginPage(){
           </label>
           <label>Display name
             <input required value={name} onChange={e=>setName(e.target.value)} placeholder="Alex" autoComplete="name"/>
-          </label>
-          <label>Account type
-            <select value={role} onChange={e=>setRole(e.target.value as "student"|"teacher")}>
-              <option value="student">Student</option>
-              <option value="teacher">Teacher</option>
-            </select>
           </label>
         </>}
 
