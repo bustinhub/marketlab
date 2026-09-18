@@ -1,0 +1,145 @@
+:root{
+  --tv-bg:#0f0f0f;
+  --tv-panel:#131313;
+  --tv-panel2:#181818;
+  --tv-line:#2a2a2d;
+  --tv-line-soft:#202023;
+  --tv-text:#f0f0f2;
+  --tv-muted:#8e8e95;
+  --tv-blue:#2962ff;
+  --tv-green:#26a69a;
+  --tv-red:#ef5350;
+  --tv-font:-apple-system,BlinkMacSystemFont,"Trebuchet MS",Roboto,Ubuntu,sans-serif;
+}
+html,body{background:var(--tv-bg)!important;color:var(--tv-text)!important;font-family:var(--tv-font)!important;letter-spacing:0!important}
+button,input,select,textarea{font-family:var(--tv-font)!important}
+body{font-feature-settings:"tnum" 1,"lnum" 1}
+.appFrame{background:var(--tv-bg)!important}
+.appTopbar{
+  height:60px!important;padding:0 16px!important;
+  grid-template-columns:170px 260px 1fr!important;gap:16px!important;
+  background:#0b0b0b!important;border-bottom:1px solid #252527!important;
+}
+.appTopbar>.brandLogo{width:auto!important}
+.brandLogo{gap:8px!important;color:#fff!important}
+.brandWord{font-size:16px!important;letter-spacing:-.02em!important}
+.brandWord b,.brandWord strong{font-weight:700!important}.brandWord strong{color:#8da4ff!important}
+.globalSearch{height:38px!important;border:0!important;border-radius:20px!important;background:#262628!important;padding:0 13px!important}
+.globalSearch:hover,.globalSearch:focus-within{background:#303033!important}
+.globalSearch input{font-size:13px!important;color:#f2f2f3!important}
+.globalSearch input::placeholder{color:#b3b3b9!important}
+.globalSearch kbd{display:none!important}
+.globalSearchMenu,.searchStatus{top:43px!important;background:#171719!important;border:1px solid #343438!important;border-radius:8px!important;box-shadow:0 16px 44px rgba(0,0,0,.48)!important}
+.globalSearchMenu button{min-height:48px!important;border-bottom:1px solid #252528!important}
+.globalSearchMenu button:hover{background:#222224!important}
+.topbarMeta{margin-left:auto!important;justify-content:flex-end!important;gap:10px!important}
+.topClassPill{height:36px!important;max-width:150px!important;padding:5px 10px!important;border:0!important;border-radius:18px!important;background:#202022!important}
+.topClassPill span{font-size:10px!important}.topClassPill small{font-size:8px!important}
+.feedBadge{height:26px!important;padding:0 8px!important;border-radius:13px!important;background:#171719!important;border:1px solid #2d2d30!important;font-size:8px!important}
+.feedBadge.live{color:#83ccc4!important;background:#10201e!important;border-color:#244a45!important}
+.topEquity{padding:0 10px!important}.topEquity span{font-size:8px!important;color:#77777e!important}.topEquity strong{font-size:11px!important;font-family:var(--tv-font)!important}
+.userAvatar{width:34px!important;height:34px!important;background:#28282b!important;border-color:#3b3b40!important}
+.accountText{display:none!important}.signOutLink{font-size:9px!important;color:#77777f!important}.signOutLink:hover{color:#fff!important}
+
+.sidebar{
+  position:fixed!important;z-index:70!important;top:0!important;left:446px!important;right:320px!important;
+  height:60px!important;min-height:0!important;padding:0!important;border:0!important;background:transparent!important;
+  display:flex!important;align-items:center!important;
+}
+.navGroup{display:flex!important;flex-direction:row!important;align-items:center!important;gap:0!important;height:100%!important}
+.navLabel,.classSummary,.sidebarBottom{display:none!important}
+.sideLink{
+  width:auto!important;height:60px!important;min-width:0!important;padding:0 11px!important;
+  display:flex!important;flex-direction:row!important;justify-content:center!important;gap:0!important;
+  border-radius:0!important;background:transparent!important;color:#f0f0f2!important;
+  font-size:13px!important;font-weight:600!important;white-space:nowrap!important;
+  border-bottom:2px solid transparent!important;box-shadow:none!important;
+}
+.sideLink svg{display:none!important}
+.sideLink:hover{background:#151515!important;color:#fff!important}
+.sideLink.active{color:#7390ff!important;background:transparent!important;border-bottom-color:#2962ff!important;box-shadow:none!important}
+
+.shellGrid{height:calc(100vh - 60px)!important;grid-template-columns:minmax(0,1fr)!important;background:var(--tv-bg)!important}
+.shellGrid.withRail{grid-template-columns:minmax(0,1fr) 320px!important}
+.appContent{background:var(--tv-bg)!important}.rightRail{background:#101010!important;border-left:1px solid var(--tv-line)!important}
+
+.tradeWorkspace{background:var(--tv-bg)!important}
+.instrumentHeader.clean{
+  min-height:88px!important;padding:15px 20px!important;
+  grid-template-columns:minmax(0,1fr) auto 34px!important;gap:14px!important;
+  background:var(--tv-bg)!important;border-bottom:1px solid var(--tv-line-soft)!important;
+}
+.companyMark{width:42px!important;height:42px!important;background:#1d1d1f!important;border:1px solid #353538!important;font-size:14px!important}
+.symbolLine{gap:8px!important}.symbolLine h1{font-size:22px!important;font-weight:700!important;letter-spacing:-.02em!important}
+.symbolLine span{font-size:12px!important;color:#c3c3c7!important}.symbolLine small{font-size:8px!important}
+.instrumentIdentity p{font-size:9px!important;color:#77777f!important}
+.quoteBlock strong{font-size:28px!important;font-weight:600!important;font-family:var(--tv-font)!important}.quoteBlock span{font-size:11px!important}
+.watchToggle{border-radius:50%!important;background:#181818!important}
+.terminalCard{min-height:470px!important;background:var(--tv-bg)!important}
+.chartControlBar{height:44px!important;padding:0 16px!important;background:var(--tv-bg)!important;border-bottom:1px solid var(--tv-line-soft)!important}
+.rangeTabs,.chartTools{gap:5px!important}
+.rangeTabs button,.chartTools button{min-width:34px!important;height:30px!important;padding:0 8px!important;border-radius:6px!important;font-size:10px!important;color:#a4a4aa!important}
+.rangeTabs button:hover,.chartTools button:hover{background:#222224!important}
+.rangeTabs button.active,.chartTools button.active{background:#303033!important;color:#fff!important;border-color:#3a3a3e!important}
+.marketChart{height:calc(100vh - 266px)!important;min-height:440px!important}
+.compactStats{min-height:64px!important;background:var(--tv-bg)!important;border-top:1px solid var(--tv-line-soft)!important}
+.compactStats>div{padding:11px 14px!important;border-right:1px solid var(--tv-line-soft)!important}
+.compactStats span{font-size:8px!important;color:#77777f!important;text-transform:none!important;letter-spacing:0!important}
+.compactStats b{font-size:10px!important;font-family:var(--tv-font)!important}
+
+.railStack,.railSection,.tradeTicket{background:#101010!important}
+.railSection{border-bottom:1px solid var(--tv-line)!important}
+.railTitle{height:48px!important;padding:0 14px!important;border-bottom:1px solid var(--tv-line)!important}
+.railTitle strong{font-size:12px!important}.watchHeader{height:30px!important;padding:0 12px!important}.watchRows{max-height:300px!important}
+.watchRow{min-height:46px!important;padding:6px 12px!important;grid-template-columns:minmax(0,1fr) 78px 60px!important;border-top:1px solid #1f1f21!important}
+.watchRow:hover{background:#1b1b1d!important}.watchRow.active{background:#242426!important;box-shadow:inset 2px 0 #2962ff!important}
+.watchRow b{font-size:11px!important}.watchRow small{font-size:8px!important}.watchRow strong,.watchRow em{font-size:10px!important;font-family:var(--tv-font)!important}
+.watchAdd{height:38px!important;color:#9a9aa0!important}
+.tradeTicket{padding:16px 14px 18px!important;border-top:1px solid var(--tv-line)!important}
+.ticketHeader strong{font-size:13px!important}.ticketHeader span{font-size:9px!important}
+.sideTabs{height:36px!important;background:#171719!important;border-radius:6px!important}.sideTabs button{font-size:10px!important}
+.ticketSymbol{height:38px!important}.ticketSymbol span,.ticketSymbol b{font-size:11px!important}
+.amountField>div{height:48px!important}.amountField input{font-size:21px!important;font-family:var(--tv-font)!important}
+.ticketRows>div{padding:8px 0!important;font-size:9px!important}.ticketRows b{font-family:var(--tv-font)!important}
+.primaryOrder{height:42px!important;font-size:11px!important}
+
+.pageContainer{max-width:1220px!important;padding:42px 42px 72px!important}
+.pageHero{padding-bottom:30px!important}.pageHero small{font-size:9px!important;letter-spacing:.08em!important;color:#727279!important}
+.pageHero h1{margin:7px 0 5px!important;font-size:34px!important;line-height:1.12!important;font-weight:700!important;letter-spacing:-.03em!important}
+.pageHero p{font-size:12px!important}
+.summaryGrid{gap:12px!important;margin-bottom:18px!important}
+.summaryCard{min-height:96px!important;padding:16px 18px!important;background:#151515!important;border-color:#29292c!important;border-radius:8px!important}
+.summaryCard span{font-size:9px!important}.summaryCard strong{font-size:20px!important;font-family:var(--tv-font)!important}
+.premiumCard,.classForm,.classList,.controlPanel,.dataTableCard,.allocationPanel{background:#141414!important;border-color:#29292c!important;border-radius:8px!important;box-shadow:none!important}
+.sectionHeading{padding-bottom:14px!important}.sectionHeading h2{font-size:16px!important;font-weight:650!important}
+.classForm{padding:20px!important}.classForm h2{font-size:16px!important}.classRow{min-height:62px!important}
+.dataTable th{font-size:8px!important}.dataTable td{font-size:10px!important;padding-top:12px!important;padding-bottom:12px!important}
+.leaderboardRow,.teacherStudent{min-height:58px!important}.emptyPanel{background:#141414!important;border-radius:8px!important}
+
+.simpleLanding,.landing{font-family:var(--tv-font)!important;background:#0f0f0f!important}
+.landingNav{height:68px!important;border-bottom-color:#242426!important}
+.simpleHeroCopy h1{font-size:64px!important;font-weight:700!important}.simpleHeroCopy p{font-size:18px!important;color:#a5a5aa!important}
+.simpleFeatures article{background:#121212!important}
+.marketChartWrap.expanded{inset:60px 0 0 0!important;background:var(--tv-bg)!important}
+
+@media(max-width:1180px){
+  .appTopbar{grid-template-columns:155px 220px 1fr!important;gap:10px!important}
+  .sidebar{left:395px!important;right:245px!important}.sideLink{padding:0 8px!important;font-size:12px!important}.topClassPill{display:none!important}
+}
+@media(max-width:930px){
+  .sidebar{top:auto!important;bottom:0!important;left:0!important;right:0!important;height:58px!important;background:#0d0d0e!important;border-top:1px solid var(--tv-line)!important;padding:3px 6px!important}
+  .navGroup{width:100%!important;display:grid!important;grid-template-columns:repeat(5,1fr)!important}
+  .sideLink{height:50px!important;padding:3px!important;flex-direction:column!important;gap:3px!important;font-size:8px!important;border:0!important;border-radius:5px!important;color:#77777f!important}
+  .sideLink svg{display:block!important}.sideLink.active{background:#1c1c1e!important;color:#fff!important}.sideLink.active svg{color:#7390ff!important}
+  .appTopbar{grid-template-columns:140px minmax(220px,1fr) auto!important}.topEquity,.signOutLink{display:none!important}
+  .shellGrid.withRail,.shellGrid{grid-template-columns:minmax(0,1fr)!important}.rightRail{display:none!important}.appContent{padding-bottom:60px!important}
+  .marketChartWrap.expanded{inset:60px 0 58px 0!important}
+}
+@media(max-width:680px){
+  .appTopbar{height:54px!important;grid-template-columns:auto 1fr auto!important;padding:0 9px!important}.brandWord{display:none!important}
+  .globalSearch{height:34px!important}.feedBadge,.accountMenu{display:none!important}.shellGrid,.shellGrid.withRail{height:auto!important}
+  .instrumentHeader.clean{min-height:76px!important;padding:10px 12px!important}.symbolLine span,.symbolLine small{display:none!important}
+  .quoteBlock strong{font-size:20px!important}.quoteBlock span{font-size:9px!important}.marketChart{height:430px!important;min-height:430px!important}
+  .compactStats{grid-template-columns:repeat(3,1fr)!important}.pageContainer{padding:26px 14px 78px!important}.pageHero h1{font-size:28px!important}
+  .summaryGrid.four{grid-template-columns:1fr 1fr!important}.marketChartWrap.expanded{inset:54px 0 58px 0!important}
+}
